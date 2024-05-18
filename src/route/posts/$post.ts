@@ -82,8 +82,8 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
 
     load();
     return $('page').id('post').content([
-        $('div').class('main').content([
-            ele.$viewer,
+        ele.$viewer,
+        $('div').class('content').content([
             $('h3').content(`Artist's Commentary`),
             ele.$commentary.content('loading...')
         ]),
