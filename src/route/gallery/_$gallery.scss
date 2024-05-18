@@ -1,4 +1,10 @@
 page#root {
+
+    layout {
+        * {
+            transition: all 0.3s ease;
+        }
+    }
     .loader {
         text-align: center;
         padding-block: 2rem;

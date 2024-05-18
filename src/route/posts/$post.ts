@@ -14,8 +14,8 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
         $commentary: $('section').class('commentary')
     }
     const value = {
-        uploader$: $.state<string|number>('loading...'),
-        approver$: $.state<string|number>('loading...'),
+        uploader$: $.state('loading...'),
+        approver$: $.state('loading...'),
         date$: $.state('loading...'),
         size$: $.state('loading...'),
         dimension$: $.state(`loading...`),
@@ -39,6 +39,8 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
         value.score$.set(post.score$)
         value.ext$.set(post.file_ext.toUpperCase())
         loadTags();
+        loadCommentary();
+
         async function loadTags() {
             const tags = await Tag.fetchMultiple(booru, {name: {_space: post.tag_string}});
             const [artist_tags, char_tags, gen_tags, meta_tags, copy_tags] = [
@@ -57,19 +59,17 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
             ])
     
             function tag_category(category: string, tags: Tag[]) {
-                const INTL_number = new Intl.NumberFormat('en', {notation: 'compact'})
                 return tags.length ? [
                     $('h3').content(category),
                     $('section').content([
                         tags.map(tag => $('div').class('tag').content([
                             $('a').class('tag-name').content(tag.name).href(`/posts?tags=${tag.name}`),
-                            $('span').class('tag-post-count').content(`${INTL_number.format(tag.post_count)}`)
+                            $('span').class('tag-post-count').content(tag.post_count$)
                         ]))
                     ])
                 ] : null
             }
         }
-        loadCommentary();
         async function loadCommentary() {
             const commentary = (await ArtistCommentary.fetchMultiple(booru, {post: {_id: post.id}})).at(0);
             if (!commentary) return ele.$commentary.content('No commentary');
@@ -99,13 +99,14 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
                     new $Property('favorites').name('Favorites').value(value.favorites$),
                     new $Property('score').name('Score').value(value.score$)
                 ]),
-                $('a').content('Copy link').href(`${booru.api}${location.pathname}`).on('click', (e, $a) => {
-                    navigator.clipboard.writeText($a.href());
-                    $a.content('Copied!');
-                    setTimeout(() => {
-                        $a.content('Copy link')
-                    }, 2000);
-                })
+                $('a').content('Copy link').href(`${booru.api}${location.pathname}`)
+                    .on('click', (e, $a) => {
+                        navigator.clipboard.writeText($a.href());
+                        $a.content('Copied!');
+                        setTimeout(() => {
+                            $a.content('Copy link')
+                        }, 2000);
+                    })
             ]),
             ele.$tags.content('loading...')
         ])

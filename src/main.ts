@@ -3,7 +3,7 @@ import '@elexis/layout';
 import '@elexis/router';
 import { Booru } from './structure/Booru';
 import { Router } from '@elexis/router';
-import { home_route } from './route/home/$home';
+import { home_route } from './route/gallery/$gallery';
 import { posts_route } from './route/posts/$post';
 
 export const booru = new Booru({

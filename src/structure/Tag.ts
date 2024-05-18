@@ -1,17 +1,22 @@
 import type { Booru } from "./Booru";
 
+const INTL_number = new Intl.NumberFormat('en', {notation: 'compact'})
 export interface TagOptions {}
 export interface Tag extends TagData {}
 export class Tag {
     static manager = new Map<id, Tag>();
+    post_count$ = $.state(0, {format: (value) => `${INTL_number.format(value)}`});
+    name$ = $.state('');
     constructor(data: TagData) {
         Object.assign(this, data);
+        this.$update();
     }
 
     static async fetch(booru: Booru, id: id) {
-        const req = await fetch(`${booru.api}/tags/${id}.json`);
-        const post = new this(await req.json());
-        return post;
+        const data = await fetch(`${booru.api}/tags/${id}.json`).then(async data => await data.json()) as TagData;
+        const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
+        this.manager.set(instance.id, instance);
+        return instance;
     }
 
     static async fetchMultiple(booru: Booru, search?: Partial<TagSearchParams>, limit = 1000) {
@@ -30,11 +35,22 @@ export class Tag {
         const req = await fetch(`${booru.api}/tags.json?limit=${limit}${searchQuery}`);
         const dataArray: TagData[] = await req.json();
         const list = dataArray.map(data => {
-            const instance = new this(data);
+            const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
             this.manager.set(instance.id, instance);
             return instance;
         });
         return list;
+    }
+
+    update(data: TagData) {
+        Object.assign(this, data);
+        this.$update();
+        return this;
+    }
+
+    $update() {
+        this.post_count$.set(this.post_count);
+        this.name$.set(this.name); 
     }
 }
 

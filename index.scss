@@ -1,8 +1,11 @@
 @import '/src/component/PostGrid/$PostGrid';
 @import '/src/component/PostTile/$PostTile';
 @import '/src/route/posts/$post';
-@import '/src/route/home/$home';
+@import '/src/route/gallery/$gallery';
 
+html {
+    overflow-x: hidden;
+}
 body {
     background-color: #1e1e2c;
     color: #d1d1ee;

@@ -4,14 +4,17 @@ export class UserOptions {}
 export interface User extends UserOptions, UserData {}
 export class User {
     static manager = new Map<id, User>();
+    name$ = $.state('loding...');
     constructor(data: UserData) {
         Object.assign(this, data);
+        this.update$();
     }
 
     static async fetch(booru: Booru, id: id) {
-        const req = await fetch(`${booru.api}/posts/${id}.json`);
-        const post = new this(await req.json());
-        return post;
+        const data = await fetch(`${booru.api}/users/${id}.json`).then(async data => await data.json()) as UserData;
+        const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
+        this.manager.set(instance.id, instance);
+        return instance;
     }
 
     static async fetchMultiple(booru: Booru, search?: Partial<UserSearchParam>, limit = 200) {
@@ -35,6 +38,16 @@ export class User {
             return instance;
         });
         return list;
+    }
+
+    update(data: UserData) {
+        Object.assign(this, data);
+        this.update$();
+        return this;
+    }
+
+    update$() {
+        this.name$.set(this.name);
     }
 }
 

@@ -7,8 +7,8 @@ export interface PostOptions {}
 export interface Post extends PostData {}
 export class Post {
     static manager = new Map<id, Post>();
-    uploader$ = $.state(this.uploader?.name ?? this.uploader_id);
-    approver$ = $.state(this.approver?.name ?? this.approver_id ?? 'None');
+    uploader$ = $.state(this.uploader?.name$ ?? this.uploader_id?.toString());
+    approver$ = $.state(this.approver?.name$ ?? this.approver_id?.toString() ?? 'None');
     created_date$ = $.state(``);
     favorites$ = $.state(this.fav_count);
     score$ = $.state(this.score);
@@ -18,10 +18,11 @@ export class Post {
     }
 
     static async fetch(booru: Booru, id: id) {
-        const req = await fetch(`${booru.api}/posts/${id}.json`);
-        const post = new this(await req.json());
-        User.fetchMultiple(booru, {id: [post.uploader_id, post.approver_id].detype(null)}).then(() => post.update$());
-        return post;
+        const data = await fetch(`${booru.api}/posts/${id}.json`).then(async data => await data.json()) as PostData;
+        const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
+        this.manager.set(instance.id, instance);
+        User.fetchMultiple(booru, {id: [instance.uploader_id, instance.approver_id].detype(null)}).then(() => instance.update$());
+        return instance;
     }
 
     static async fetchMultiple(booru: Booru, tags?: Partial<MetaTags> | string, limit = 20) {
@@ -40,21 +41,28 @@ export class Post {
         const req = await fetch(`${booru.api}/posts.json?limit=${limit}${tagsQuery}&_method=get`);
         const dataArray: PostData[] = await req.json();
         const list = dataArray.map(data => {
-            const instance = new Post(data);
+            const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
             this.manager.set(instance.id, instance);
             return instance;
         });
+        if (!list.length) return list;
         const userIds = [...new Set(dataArray.map(data => [data.approver_id, data.uploader_id].detype(null)).flat())];
         User.fetchMultiple(booru, {id: userIds}).then(() => list.forEach(post => post.update$()));
         return list;
     }
 
     update$() {
-        this.uploader$.set(this.uploader?.name ?? this.uploader_id);
-        this.approver$.set(this.approver?.name ?? this.approver_id ?? 'None');
+        this.uploader$.set(this.uploader?.name$ ?? this.uploader_id.toString());
+        this.approver$.set(this.approver?.name$ ?? this.approver_id?.toString() ?? 'None');
         this.created_date$.set(dateFrom(+new Date(this.created_at)));
         this.favorites$.set(this.fav_count);
         this.score$.set(this.score);
+    }
+
+    update(data: PostData) {
+        Object.assign(this, data);
+        this.update$();
+        return this;
     }
 
     get pathname() { return `/posts/${this.id}` }
