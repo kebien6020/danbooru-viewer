@@ -1,7 +1,7 @@
 post {
     display: block;
 
-    &[filetype="mp4"], &[filetype="webm"] {
+    &[filetype="mp4"], &[filetype="webm"], &[filetype="zip"] {
         span.duration {
             background-color: #ffffff;
             color: #000000;

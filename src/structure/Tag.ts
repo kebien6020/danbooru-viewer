@@ -66,9 +66,9 @@ export interface TagSearchParams {
 }
 
 export enum TagCategory {
-    General,
-    Artist,
-    Copyright,
-    Character,
-    Meta
+    General = 0,
+    Artist = 1,
+    Copyright = 3,
+    Character = 4,
+    Meta = 5
 }

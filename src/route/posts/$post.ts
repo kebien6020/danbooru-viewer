@@ -27,7 +27,7 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
         const post = Post.manager.get(+params.id) ?? await Post.fetch(booru, +params.id);
         ele.$viewer.content([
             post.isVideo
-                ? $('video').src(post.file_url).controls(true)
+                ? $('video').src(post.file_ext === 'zip' ? post.large_file_url : post.file_url).controls(true)
                 : $('img').src(post.large_file_url).once('load', (e, $img) => { $img.src(post.file_url)})
         ])
         value.uploader$.set(post.uploader$);

@@ -46,8 +46,6 @@ export class Post {
         });
         const userIds = [...new Set(dataArray.map(data => [data.approver_id, data.uploader_id].detype(null)).flat())];
         User.fetchMultiple(booru, {id: userIds}).then(() => list.forEach(post => post.update$()));
-        // const tagNames = new Set(dataArray.map(data => data.tag_string.split(' ')).flat());
-        // Tag.fetchMultiple(booru, {name: {_comma: [...tagNames.values()].toString()}})
         return list;
     }
 
@@ -62,7 +60,7 @@ export class Post {
     get pathname() { return `/posts/${this.id}` }
     get uploader() { return User.manager.get(this.uploader_id); }
     get approver() { if (this.approver_id) return User.manager.get(this.approver_id); else return null }
-    get isVideo() { return this.file_ext === 'mp4' || this.file_ext === 'webm' }
+    get isVideo() { return this.file_ext === 'mp4' || this.file_ext === 'webm' || this.file_ext === 'zip' }
     get tags() { 
         const tag_list = this.tag_string.split(' ');
         return [...Tag.manager.values()].filter(tag => tag_list.includes(tag.name))

@@ -6,7 +6,7 @@ import { $PostTile } from "../../component/PostTile/$PostTile";
 
 export const home_route = new Route((path) => {
     if (path === '/posts' || path === '/') return '/';
-}, ({record, loaded}) => {
+}, ({record}) => {
     const $page = $('page').id('root');
     async function load(tags: string) {
         const posts = await Post.fetchMultiple(booru, tags.length ? {tags: tags} : undefined, 100)
@@ -14,7 +14,29 @@ export const home_route = new Route((path) => {
           posts.filter(post => post.file_url).map(post => new $PostTile(post))
         ]).on('resize', () => { resizeCheck() });
         resizeCheck();
-        return $grid
+        let last_post = posts.at(-1)!;
+        let loaded = false;
+        let ended = posts.length !== 100;
+        const $loader = $('div').class('loader').content( ended ? `It's End` : 'Loading...');
+        window.addEventListener('scroll', async () => {
+            if (!$grid.inDOM()) return;
+            if (ended) return;
+            if (loaded) return;
+            if (document.documentElement.scrollTop < document.documentElement.scrollHeight - innerHeight * 3) return;
+            loaded = true;
+            const posts = await Post.fetchMultiple(booru, tags.length ? {tags: tags, id: `..${last_post.id - 1}`} : {id: `..${last_post.id - 1}`}, 100)
+            $grid.insert(
+                posts.filter(post => post.file_url).map(post => new $PostTile(post))
+            ).render();
+            if (posts.length !== 100) {
+                $loader.content(`It's End`);
+                ended = true;
+            }
+            last_post = posts.at(-1)!;
+            loaded = false;
+        })
+
+        return {$grid, $loader}
 
         function resizeCheck() {
             if (innerWidth < 350) $grid.column(1);
@@ -37,8 +59,11 @@ export const home_route = new Route((path) => {
         } else {
             $page.clear();
         }
-        const $grid = await load(tags);
-        $page.content($grid);
+        const {$grid, $loader} = await load(tags);
+        $page.content([
+            $grid,
+            $loader
+        ]);
         $grid.render();
         gridManager.set(tags, $grid);
         Router.recoveryScrollPosition();

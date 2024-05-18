@@ -35,7 +35,7 @@ export class $PostTile extends $Container {
                     })
             ])
             .on('mouseenter', () => {
-                if (!this.$video?.isPlaying) this.$video?.src(this.post.file_url).hide(false).play().catch(err => undefined)
+                if (!this.$video?.isPlaying) this.$video?.src(this.post.large_file_url).hide(false).play().catch(err => undefined)
             })
             .on('mouseleave', () => {
                 this.$video?.pause().currentTime(0).hide(true);
