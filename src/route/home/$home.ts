@@ -1,4 +1,4 @@
-import { Route } from "@elexis/router";
+import { Route, Router } from "@elexis/router";
 import { Post } from "../../structure/Post";
 import { booru } from "../../main";
 import { $PostGrid } from "../../component/PostGrid/$PostGrid";
@@ -6,7 +6,7 @@ import { $PostTile } from "../../component/PostTile/$PostTile";
 
 export const home_route = new Route((path) => {
     if (path === '/posts' || path === '/') return '/';
-}, ({record}) => {
+}, ({record, loaded}) => {
     const $page = $('page').id('root');
     async function load(tags: string) {
         const posts = await Post.fetchMultiple(booru, tags.length ? {tags: tags} : undefined, 100)
@@ -32,7 +32,7 @@ export const home_route = new Route((path) => {
         const $cacheGrid = gridManager.get(tags);
         if ($cacheGrid) {
             $page.content($cacheGrid);
-            $cacheGrid.render()
+            $cacheGrid.render();
             return;
         } else {
             $page.clear();
@@ -41,6 +41,7 @@ export const home_route = new Route((path) => {
         $page.content($grid);
         $grid.render();
         gridManager.set(tags, $grid);
+        Router.recoveryScrollPosition();
     })
     return $page;
 })

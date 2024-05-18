@@ -57,12 +57,13 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
             ])
     
             function tag_category(category: string, tags: Tag[]) {
+                const INTL_number = new Intl.NumberFormat('en', {notation: 'compact'})
                 return tags.length ? [
                     $('h3').content(category),
                     $('section').content([
                         tags.map(tag => $('div').class('tag').content([
                             $('a').class('tag-name').content(tag.name).href(`/posts?tags=${tag.name}`),
-                            $('span').class('tag-post-count').content(`${tag.post_count}`)
+                            $('span').class('tag-post-count').content(`${INTL_number.format(tag.post_count)}`)
                         ]))
                     ])
                 ] : null
