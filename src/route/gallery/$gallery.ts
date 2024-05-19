@@ -16,7 +16,7 @@ export const home_route = new Route((path) => {
                 filtered_posts.map(post => new $PostTile(post))
             ]).on('resize', () => { resizeCheck() });
         resizeCheck();
-        let FIRST_POST = posts.at(1)!;
+        let FIRST_POST = posts.at(0)!;
         let LAST_POST = posts.at(-1)!;
         let SCROLL_LOADED = false;
         let POST_ENDED = posts.length !== MAX_POST_LENGTH;
@@ -42,7 +42,7 @@ export const home_route = new Route((path) => {
         setInterval(async () => {
             if (!$layout.inDOM()) return;
             if (document.documentElement.scrollTop !== 0) return;
-            const posts = await Post.fetchMultiple(booru, tags.length ? {tags: tags, id: `${FIRST_POST.id + 2}..`} : {id: `${FIRST_POST.id + 2}..`}, MAX_POST_LENGTH)
+            const posts = await Post.fetchMultiple(booru, tags.length ? {tags: tags, id: `${FIRST_POST.id + 1}..`} : {id: `${FIRST_POST.id + 1}..`}, MAX_POST_LENGTH)
             const filtered_posts = posts.filter(post => post.file_url)
             if (posts.length) FIRST_POST = posts.at(0)!;
             if (filtered_posts.length) $layout.insert(filtered_posts.map(post => new $PostTile(post)), 0).render();
