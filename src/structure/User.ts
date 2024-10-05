@@ -11,7 +11,7 @@ export class User {
     }
 
     static async fetch(booru: Booru, id: id) {
-        const data = await fetch(`${booru.api}/users/${id}.json`).then(async data => await data.json()) as UserData;
+        const data = await fetch(`${booru.origin}/users/${id}.json`).then(async data => await data.json()) as UserData;
         const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
         this.manager.set(instance.id, instance);
         return instance;
@@ -30,7 +30,7 @@ export class User {
                 else searchQuery += `&search[${key}]=${val}`
             }
         }
-        const req = await fetch(`${booru.api}/users.json?limit=${limit}${searchQuery}`);
+        const req = await fetch(`${booru.origin}/users.json?limit=${limit}${searchQuery}`);
         const dataArray: UserData[] = await req.json();
         const list = dataArray.map(data => {
             const instance = new this(data);

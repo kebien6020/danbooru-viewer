@@ -4,18 +4,19 @@ const INTL_number = new Intl.NumberFormat('en', {notation: 'compact'})
 export interface TagOptions {}
 export interface Tag extends TagData {}
 export class Tag {
-    static manager = new Map<id, Tag>();
     post_count$ = $.state(0, {format: (value) => `${INTL_number.format(value)}`});
     name$ = $.state('');
-    constructor(data: TagData) {
+    booru: Booru;
+    constructor(booru: Booru, data: TagData) {
+        this.booru = booru;
         Object.assign(this, data);
         this.$update();
     }
 
     static async fetch(booru: Booru, id: id) {
-        const data = await fetch(`${booru.api}/tags/${id}.json`).then(async data => await data.json()) as TagData;
-        const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
-        this.manager.set(instance.id, instance);
+        const data = await fetch(`${booru.origin}/tags/${id}.json`).then(async data => await data.json()) as TagData;
+        const instance = booru.tags.get(data.id)?.update(data) ?? new this(booru, data);
+        booru.tags.set(instance.id, instance);
         return instance;
     }
 
@@ -32,11 +33,11 @@ export class Tag {
                 else searchQuery += `&search[${key}]=${val}`
             }
         }
-        const req = await fetch(`${booru.api}/tags.json?limit=${limit}${searchQuery}`);
+        const req = await fetch(`${booru.origin}/tags.json?limit=${limit}${searchQuery}`);
         const dataArray: TagData[] = await req.json();
         const list = dataArray.map(data => {
-            const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
-            this.manager.set(instance.id, instance);
+            const instance = booru.tags.get(data.id)?.update(data) ?? new this(booru, data);
+            booru.tags.set(instance.id, instance);
             return instance;
         });
         return list;

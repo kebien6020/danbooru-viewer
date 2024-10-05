@@ -1,33 +1,38 @@
-post {
+post-tile {
     display: block;
+    transition: 0.3s all ease;
+    position: relative;
 
-    &[filetype="mp4"], &[filetype="webm"], &[filetype="zip"] {
-        span.duration {
-            background-color: #ffffff;
-            color: #000000;
+
+        &[filetype="mp4"], &[filetype="webm"], &[filetype="zip"] {
+            span.duration {
+                background-color: #ffffff;
+                color: #000000;
+            }
         }
-    }
-    span.duration {
-        position: absolute;
-        background-color: #00000050;
-        bottom: 0.3rem;
-        right: 0.3rem;
-        padding: 2px 4px;
-        border-radius: 4px;
-        font-size: 12px;
-        text-transform: uppercase;
-        z-index: 2;
-    }
-    img {
-        border-radius: 10px;
-        height: 100%;
-        width: 100%;
-    }
-    video {
-        border-radius: 10px;
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        position: absolute;
-    }
+        span.duration {
+            position: absolute;
+            background-color: #00000050;
+            bottom: 0.3rem;
+            right: 0.3rem;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+        img {
+            border-radius: 10px;
+            height: 100%;
+            width: 100%;
+            vertical-align: top;
+        }
+        video {
+            border-radius: 10px;
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            position: absolute;
+            z-index: 1;
+        }
 }

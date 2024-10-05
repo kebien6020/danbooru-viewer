@@ -1,48 +1,30 @@
-import { Route } from "@elexis/router";
 import { Post } from "../../structure/Post";
-import { booru } from "../../main";
 import { $Container, type $ContainerContentType } from "elexis";
-import { digitalUnit } from "../../structure/Util";
 import { Tag, TagCategory } from "../../structure/Tag";
 import { ArtistCommentary } from "../../structure/Commentary";
+import { Booru } from "../../structure/Booru";
 
-export const posts_route = new Route('/posts/:id', ({params}) => {
+export const post_route = $('route').path('/posts/:id').id('post').builder(({$route, params}) => {
     if (!Number(params.id)) return '404';
+    const post = new Post(Booru.used, +params.id);
     const ele = {
         $viewer: $('div').class('viewer'),
         $tags: $('div').class('post-tags'),
         $commentary: $('section').class('commentary')
     }
-    const value = {
-        uploader$: $.state('loading...'),
-        approver$: $.state('loading...'),
-        date$: $.state('loading...'),
-        size$: $.state('loading...'),
-        dimension$: $.state(`loading...`),
-        favorites$: $.state(0),
-        score$: $.state(0),
-        ext$: $.state(`loading...`),
-    }
+    load();
     async function load() {
-        const post = Post.manager.get(+params.id) ?? await Post.fetch(booru, +params.id);
+        await post.fetch();
         ele.$viewer.content([
             post.isVideo
                 ? $('video').src(post.file_ext === 'zip' ? post.large_file_url : post.file_url).controls(true)
-                : $('img').src(post.large_file_url).once('load', (e, $img) => { $img.src(post.file_url)})
+                : $('img').src(post.large_file_url)//.once('load', (e, $img) => { $img.src(post.file_url)})
         ])
-        value.uploader$.set(post.uploader$);
-        value.approver$.set(post.approver$);
-        value.date$.set(post.created_date$);
-        value.size$.set(digitalUnit(post.file_size));
-        value.dimension$.set(`${post.image_width}x${post.image_height}`)
-        value.favorites$.set(post.favorites$)
-        value.score$.set(post.score$)
-        value.ext$.set(post.file_ext.toUpperCase())
         loadTags();
         loadCommentary();
 
         async function loadTags() {
-            const tags = await Tag.fetchMultiple(booru, {name: {_space: post.tag_string}});
+            const tags = await post.fetchTags();
             const [artist_tags, char_tags, gen_tags, meta_tags, copy_tags] = [
                 tags.filter(tag => tag.category === TagCategory.Artist),
                 tags.filter(tag => tag.category === TagCategory.Character),
@@ -71,7 +53,7 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
             }
         }
         async function loadCommentary() {
-            const commentary = (await ArtistCommentary.fetchMultiple(booru, {post: {_id: post.id}})).at(0);
+            const commentary = (await ArtistCommentary.fetchMultiple(Booru.used, {post: {_id: post.id}})).at(0);
             if (!commentary) return ele.$commentary.content('No commentary');
             ele.$commentary.content([
                 commentary.original_title ? $('h3').content(commentary.original_title) : null,
@@ -79,9 +61,7 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
             ])
         }
     }
-
-    load();
-    return $('page').id('post').content([
+    return [
         ele.$viewer,
         $('div').class('content').content([
             $('h3').content(`Artist's Commentary`),
@@ -90,27 +70,34 @@ export const posts_route = new Route('/posts/:id', ({params}) => {
         $('div').class('sidebar').content([
             $('section').class('post-info').content([
                 new $Property('id').name('Post').value(`#${params.id}`),
-                new $Property('uploader').name('Uploader').value(value.uploader$),
-                new $Property('approver').name('Approver').value(value.approver$),
-                new $Property('date').name('Date').value(value.date$),
-                new $Property('size').name('Size').value([value.size$, value.dimension$]),
-                new $Property('file').name('File Type').value(value.ext$),
+                new $Property('uploader').name('Uploader').value(post.uploader$),
+                new $Property('approver').name('Approver').value(post.approver$),
+                new $Property('date').name('Date').value(post.created_date$),
+                new $Property('size').name('Size').value([post.file_size$, post.dimension$]),
+                new $Property('file').name('File Type').value(post.file_ext$),
                 $('div').class('inline').content([
-                    new $Property('favorites').name('Favorites').value(value.favorites$),
-                    new $Property('score').name('Score').value(value.score$)
+                    new $Property('favorites').name('Favorites').value(post.favorites$),
+                    new $Property('score').name('Score').value(post.score$)
                 ]),
-                $('a').content('Copy link').href(`${booru.api}${location.pathname}`)
-                    .on('click', (e, $a) => {
-                        navigator.clipboard.writeText($a.href());
-                        $a.content('Copied!');
+                $('button').content('Copy link')
+                    .on('click', (e, $button) => {
+                        e.preventDefault();
+                        navigator.clipboard.writeText(`${Booru.used.origin}${location.pathname}`);
+                        $button.content('Copied!');
                         setTimeout(() => {
-                            $a.content('Copy link')
+                            $button.content('Copy link')
                         }, 2000);
                     })
             ]),
             ele.$tags.content('loading...')
-        ])
-    ])
+        ]).self($sidebar => {
+            let scrollTop = 0;
+            addEventListener('scroll', () => { if ($sidebar.inDOM()) scrollTop = document.documentElement.scrollTop })
+            $route
+                .on('beforeShift', () => { if (innerWidth > 800) $sidebar.css({position: `absolute`, top: `${scrollTop}px`}) })
+                .on('afterShift', () => $sidebar.css({position: '', top: ''}))
+        })
+    ]
 })
 
 class $Property extends $Container {

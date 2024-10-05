@@ -1,28 +1,34 @@
-import { $ } from "elexis";
-import type { Booru } from "./Booru";
+import { $, $EventManager } from "elexis";
+import { Booru } from "./Booru";
 import { Tag } from "./Tag";
 import { User } from "./User";
-import { dateFrom } from "./Util";
+import { dateFrom, digitalUnit } from "./Util";
 export interface PostOptions {}
 export interface Post extends PostData {}
-export class Post {
-    static manager = new Map<id, Post>();
+export class Post extends $EventManager<{update: []}> {
     uploader$ = $.state(this.uploader?.name$ ?? this.uploader_id?.toString());
     approver$ = $.state(this.approver?.name$ ?? this.approver_id?.toString() ?? 'None');
     created_date$ = $.state(``);
     favorites$ = $.state(this.fav_count);
     score$ = $.state(this.score);
-    constructor(data: PostData) {
-        Object.assign(this, data);
-        this.update$();
+    file_size$ = $.state('');
+    file_ext$ = $.state(this.file_ext);
+    dimension$ = $.state('');
+    createdDate = new Date(this.created_at);
+
+    booru: Booru;
+    constructor(booru: Booru, id: id) {
+        super();
+        this.booru = booru;
+        this.id = id;
+        booru.posts.set(this.id, this);
     }
 
-    static async fetch(booru: Booru, id: id) {
-        const data = await fetch(`${booru.api}/posts/${id}.json`).then(async data => await data.json()) as PostData;
-        const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
-        this.manager.set(instance.id, instance);
-        User.fetchMultiple(booru, {id: [instance.uploader_id, instance.approver_id].detype(null)}).then(() => instance.update$());
-        return instance;
+    async fetch() {
+        const data = await fetch(`${this.booru.origin}/posts/${this.id}.json`).then(async data => await data.json()) as PostData;
+        this.update(data);
+        User.fetchMultiple(this.booru, {id: [this.uploader_id, this.approver_id].detype(null)}).then(() => this.update$());
+        return this;
     }
 
     static async fetchMultiple(booru: Booru, tags?: Partial<MetaTags> | string, limit = 20) {
@@ -30,19 +36,20 @@ export class Post {
         if (tags) {
             if (typeof tags === 'string') tagsQuery = tags;
             else {
-                tagsQuery += '&tags='
                 for (const [key, val] of Object.entries(tags)) {
+                    if (val === undefined) continue;
                     if (key === 'tags') { tagsQuery += `${val}`; continue; }
                     if (tagsQuery.at(-1) !== '=') tagsQuery += ' '; // add space between tags
                     tagsQuery += `${key}:${val}`
                 }
             }
         }
-        const req = await fetch(`${booru.api}/posts.json?limit=${limit}${tagsQuery}&_method=get`);
+        const req = await fetch(`${booru.origin}/posts.json?limit=${limit}&tags=${tagsQuery}&_method=get`);
         const dataArray: PostData[] = await req.json();
         const list = dataArray.map(data => {
-            const instance = this.manager.get(data.id)?.update(data) ?? new this(data);
-            this.manager.set(instance.id, instance);
+            const instance = booru.posts.get(data.id)?.update(data) ?? new this(booru, data.id);
+            instance.update(data);
+            booru.posts.set(instance.id, instance);
             return instance;
         });
         if (!list.length) return list;
@@ -52,11 +59,16 @@ export class Post {
     }
 
     update$() {
-        this.uploader$.set(this.uploader?.name$ ?? this.uploader_id.toString());
+        this.uploader$.set(this.uploader?.name$ ?? this.uploader_id?.toString());
         this.approver$.set(this.approver?.name$ ?? this.approver_id?.toString() ?? 'None');
         this.created_date$.set(dateFrom(+new Date(this.created_at)));
         this.favorites$.set(this.fav_count);
         this.score$.set(this.score);
+        this.file_size$.set(digitalUnit(this.file_size));
+        this.file_ext$.set(this.file_ext as any);
+        this.dimension$.set(`${this.image_width}x${this.image_height}`);
+        this.createdDate = new Date(this.created_at);
+        this.fire('update');
     }
 
     update(data: PostData) {
@@ -65,13 +77,17 @@ export class Post {
         return this;
     }
 
+    async fetchTags() {
+        return await Tag.fetchMultiple(this.booru, {name: {_space: this.tag_string}});
+    }
+
     get pathname() { return `/posts/${this.id}` }
     get uploader() { return User.manager.get(this.uploader_id); }
     get approver() { if (this.approver_id) return User.manager.get(this.approver_id); else return null }
     get isVideo() { return this.file_ext === 'mp4' || this.file_ext === 'webm' || this.file_ext === 'zip' }
     get tags() { 
         const tag_list = this.tag_string.split(' ');
-        return [...Tag.manager.values()].filter(tag => tag_list.includes(tag.name))
+        return [...this.booru.tags.values()].filter(tag => tag_list.includes(tag.name))
     }
 }
 

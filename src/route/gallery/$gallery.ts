@@ -1,12 +1,9 @@
-import { Route, Router } from "@elexis/router";
 import { Post } from "../../structure/Post";
 import { booru } from "../../main";
 import { $PostGrid } from "../../component/PostGrid/$PostGrid";
 import { $PostTile } from "../../component/PostTile/$PostTile";
 const MAX_POST_LENGTH = 100;
-export const home_route = new Route((path) => {
-    if (path === '/posts' || path === '/') return '/';
-}, ({record}) => {
+export const home_route = $('route').path(['/', '/posts']).builder((record) => {
     const $page = $('page').id('root');
     async function load(tags: string) {
         const posts = await Post.fetchMultiple(booru, tags.length ? {tags: tags} : undefined, MAX_POST_LENGTH)
@@ -61,7 +58,7 @@ export const home_route = new Route((path) => {
     }
 
     const gridManager = new Map<string, $PostGrid>();
-    record.on('open', async () => {
+    record.$route.events.on('opened', async () => {
         const tags = new URL(location.href).searchParams.get('tags') ?? '';
         const $cacheGrid = gridManager.get(tags);
         if ($cacheGrid) {
@@ -78,7 +75,6 @@ export const home_route = new Route((path) => {
         ]);
         $layout.render();
         gridManager.set(tags, $layout);
-        Router.recoveryScrollPosition();
     })
     return $page;
 })

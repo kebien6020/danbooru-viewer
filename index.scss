@@ -1,38 +1,147 @@
 @import '/src/component/PostGrid/$PostGrid';
 @import '/src/component/PostTile/$PostTile';
-@import '/src/route/posts/$post';
+@import '/src/component/Searchbar/$Searchbar';
+@import '/src/route/post/$post';
 @import '/src/route/gallery/$gallery';
 
+:root {
+    --background-color: #1e1e2c;
+    --background-color-lighter: #3b3b66;
+    --background-color-light: #24243b;
+    --primary-color: #d1d1ee;
+    --primary-color-dark: #9696b3;
+    --primary-color-darker: #72728d;
+    --secondary-color: #aeaeec;
+    --secondary-color-dark: #424268;
+
+    --nav-height: 50px;
+}
 html {
     overflow-x: hidden;
-}
-body {
-    background-color: #1e1e2c;
-    color: #d1d1ee;
-    margin: 0;
-    font-family: Microsoft Yahei;
     font-size: 14px;
 
-    &::-webkit-scrollbar {
-        background-color: #000000;
+    ::-webkit-scrollbar {
+        background-color: var(--background-color);
         width: 8px;
     }
 
-    &::-webkit-scrollbar-thumb {
+    ::-webkit-scrollbar-thumb {
         background-color: #aeaeec;
         border-radius: 2px;
     }
 }
+body {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+    margin: 0;
+    font-family: Microsoft Yahei;
+}
 
-app {
-    display: block;
-    view {
-        display: block;
+nav {
+    display: flex;
+    width: 100%;
+    height: var(--nav-height);
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    background-color: var(--background-color);
+    justify-content: space-between;
+    align-items: center;
+    padding-inline: 1rem;
+    box-sizing: border-box;
 
-        page {
-            min-height: 100%;
-            padding: 1rem;
-            display: block;
+    div.title {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        a.booru-name {
+            color: var(--secondary-color);
+            text-decoration: none;
+            h1 {
+                margin: 0;
+            }
         }
+        a.version {
+            color: var(--background-color);
+            background-color: var(--secondary-color);
+            padding: 0.2em 0.4em;
+            border-radius: 0.4rem;
+            font-size: 0.8rem;
+            text-decoration: none;
+        }
+    }
+    button {
+        padding: 2px 4px;
+        border-radius: 0.4rem;
+        border: none;
+    }
+    div.searchbar {
+        padding: 0.4rem 10%;
+        max-width: 500px;
+        background-color: var(--background-color);
+        border: 1px solid var(--primary-color-darker);
+        border-radius: 0.4rem;
+        color: var(--primary-color-dark);
+        cursor: pointer;
+        &:hover {
+            background-color: var(--background-color-light);
+            color: var(--primary-color);
+        }
+    }
+    div.buttons {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        ion-icon {
+            background-color: var(--background-color);
+            transition: all 0.3s ease;
+            border-radius: 1rem;
+            padding: 0.4rem;
+            &:hover {
+                background-color: var(--background-color-lighter);
+            }
+        }
+        ion-icon.search {
+            display: none;
+        }
+    }
+
+    @media (max-width: 800px) {
+        div.searchbar {
+            display: none;
+        }
+        div.buttons ion-icon.search {
+            display: inline-block;
+        }
+    }
+}
+
+router {
+    display: block;
+    position: relative;
+    padding-top: var(--nav-height);
+
+    route {
+        display: block;
+        position: relative;
+        padding-inline: 10px;
+    }
+}
+
+button {
+    background-color: #aeaeec;
+    padding: 2px 4px;
+    border-radius: 0.4rem;
+    border: none;
+    cursor: pointer;
+}
+
+ion-icon {
+    font-size: 24px;
+    color: var(--primary-color);
+    cursor: pointer;
+    
+    &:hover {
+        color: var(--secondary-color);
     }
 }

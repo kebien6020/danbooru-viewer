@@ -1,0 +1,158 @@
+searchbar {
+    display: flex;
+    // justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    z-index: 200;
+    position: fixed;
+    height: 100%;
+
+    div.input-container {
+        margin-top: 0.4rem;
+        background-color: var(--background-color-light);
+        border-radius: 0.4rem;
+        font-size: 1rem;
+        width: 500px;
+        padding: 0.4rem 0.4rem;
+        max-width: calc(100% - 2rem);
+        box-sizing: border-box;
+        z-index: 201;
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--secondary-color-dark);
+        
+        &:focus-within {
+            outline: none;
+            // border-color: var(--primary-color-dark);
+        }
+
+        tag-input {
+            display: flex;
+            gap: 0.4rem;
+            width: 100%;
+            overflow: hidden;
+            padding-inline: 0.4rem;
+            box-sizing: border-box;
+            cursor: text;
+
+            tag {
+                display: inline-block;
+                padding: 0.2rem 0.4rem;
+                background-color: var(--secondary-color-dark);
+                color: var(--secondary-color);
+                border-radius: 0.4rem;
+                cursor: pointer;
+            }
+        }
+
+        ion-icon {
+            font-size: 20px;
+            color: var(--secondary-color-dark);
+            cursor: pointer;
+            &:hover {
+                color: var(--secondary-color);
+            }
+        }
+    }
+
+    div.selection-list-container {
+        overflow: hidden;
+        border-radius: 0.4rem;
+        background-color: var(--background-color);
+        z-index: 201;
+        max-width: calc(100% - 2rem);
+        width: 500px;
+
+        selection-list {
+            display: block;
+            max-height: 40vh;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            position: relative;
+
+            selection {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.4rem 1rem;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: color-mix(in srgb, var(--background-color-lighter) 50%, transparent);
+                }
+                &.active {
+                    background-color: var(--background-color-lighter);
+                }
+                .tag-name {
+                }
+                .tag-category {
+                    padding: 0.1rem 0.4rem;
+                    border-radius: 0.4rem;
+                    font-size: 0.9rem;
+                    background-color: var(--secondary-color-dark);
+                    color: var(--secondary-color);
+                }
+    
+            }
+        }
+    }
+
+    div.filter {
+        background-color: var(--background-color);
+        opacity: 0.5;
+        position: fixed;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 199;
+    }
+}
+
+.input-wrapper {
+    color: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 0.4rem;
+    position: relative;
+    box-sizing: border-box;
+    line-height: 1em;
+    font-size: 14px;
+    padding: 4px 8px;
+    display: inline-block;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    // overflow: hidden;
+
+    span.sizer {
+        font-family: inherit;
+        white-space: pre;
+        height: 1em;
+        display: inline-block;
+        font-size: inherit;
+        line-height: inherit;
+        box-sizing: border-box;
+        position: relative;
+        opacity: 0;
+        min-width: 2px;
+        user-select: none;
+        vertical-align: top;
+    }
+    input {
+        color: inherit;
+        height: 100%;
+        text-overflow: ellipsis;
+        font-family: inherit;
+        background: none;
+        color: inherit;
+        top: 0;
+        left: 0;
+        font-size: inherit;
+        line-height: inherit;
+        padding: inherit;
+        position: absolute;
+        box-sizing: border-box;
+        width: 100%;
+        border: none;
+        outline: none;
+    }
+}
