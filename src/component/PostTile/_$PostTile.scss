@@ -29,7 +29,8 @@ post-tile {
         color: var(--primary-color);
         bottom: 0.3rem;
         right: 0.3rem;
-        padding: 2px 4px;
+        padding: 0.2em 0.4em;
+        height: 1rem;
         border-radius: 4px;
         font-size: 12px;
         display: flex;
@@ -39,7 +40,12 @@ post-tile {
         // text-shadow: 0 0 0.5em var(--background-color);
 
         ion-icon {
-            font-size: 1.5em;
+            font-size: 1.4rem;
+
+            &[name="images-outline"] {
+                padding: 0.1rem;
+                font-size: 1rem;
+            }
         }
 
         span.duration {

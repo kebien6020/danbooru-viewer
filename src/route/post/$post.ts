@@ -11,7 +11,7 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
         $('div').class('viewer').content(async () => {
             await post.ready;
             return post.isVideo
-                ? $('video').height(post.image_height).width(post.image_width).src(post.file_ext === 'zip' ? post.large_file_url : post.file_url).controls(true).autoplay(true).loop(true)
+                ? $('video').height(post.image_height).width(post.image_width).src(post.file_ext === 'zip' ? post.large_file_url : post.file_url).controls(true).autoplay(true).loop(true).disablePictureInPicture(true)
                 : $('img').src(post.large_file_url)//.once('load', (e, $img) => { $img.src(post.file_url)})
         }),
         $('div').class('content').content([
@@ -46,14 +46,36 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
                         new $Property('favorites').name('Favorites').value(post.favorites$),
                         new $Property('score').name('Score').value(post.score$)
                     ]),
-                    $('button').content('Copy link').on('click', (e, $button) => {
-                        e.preventDefault();
-                        navigator.clipboard.writeText(`${Booru.used.origin}${location.pathname}`);
-                        $button.content('Copied!');
-                        setTimeout(() => {
-                            $button.content('Copy link')
-                        }, 2000);
-                    })
+                    $('div').class('buttons').content([
+                        $('icon-button').class('vertical').icon('link-outline').content(Booru.name$)
+                            .on('click', (e, $button) => {
+                                e.preventDefault();
+                                navigator.clipboard.writeText(`${Booru.used.origin}${location.pathname}`);
+                                $button.content('Copied!');
+                                setTimeout(() => {
+                                    $button.content(Booru.name$)
+                                }, 2000);
+                            }),
+                        $('icon-button').class('vertical').icon('link-outline').content(`File`)
+                            .on('click', (e, $button) => {
+                                e.preventDefault();
+                                navigator.clipboard.writeText(post.file_url);
+                                $button.content('Copied!');
+                                setTimeout(() => {
+                                    $button.content('File')
+                                }, 2000);
+                            }),
+                        $('icon-button').class('vertical').icon('link-outline').content(`Webm`)
+                            .on('click', (e, $button) => {
+                                e.preventDefault();
+                                navigator.clipboard.writeText(post.previewURL);
+                                $button.content('Copied!');
+                                setTimeout(() => {
+                                    $button.content('Webm')
+                                }, 2000);
+                            })
+                            .hide(true).self(async ($button) => { await post.ready; if (post.file_ext === 'zip') $button.hide(false) })
+                    ]),
                 ]),
                 $('div').class('post-tags').content(async $tags => {
                     const tags = await post.fetchTags();

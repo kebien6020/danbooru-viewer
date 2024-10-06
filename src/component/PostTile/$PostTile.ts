@@ -30,6 +30,7 @@ export class $PostTile extends $Container {
             this.post.isVideo 
                 ? $('div').class('video-detail').content([
                     this.post.hasSound ? $('ion-icon').name('volume-medium-outline') : null,
+                    this.post.isUgoria ? $('ion-icon').name('images-outline') : null,
                     $('span').class('duration').content(this.duration$) 
                 ]) : null,
             // Gif

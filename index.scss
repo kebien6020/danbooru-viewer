@@ -1,6 +1,7 @@
 @import '/src/component/PostGrid/$PostGrid';
 @import '/src/component/PostTile/$PostTile';
 @import '/src/component/Searchbar/$Searchbar';
+@import '/src/component/IconButton/$IconButton';
 @import '/src/route/post/$post';
 @import '/src/route/gallery/$gallery';
 
@@ -139,9 +140,10 @@ router {
 }
 
 button {
-    background-color: #aeaeec;
-    padding: 2px 4px;
-    border-radius: 0.4rem;
+    background-color: var(--secondary-color-dark);
+    color: var(--secondary-color);
+    padding: 0.8rem 1.2rem;
+    border-radius: 1rem;
     border: none;
     cursor: pointer;
 }

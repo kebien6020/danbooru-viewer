@@ -7,15 +7,18 @@ import { $PostGrid } from './component/PostGrid/$PostGrid';
 import { $Router, $RouterNavigationDirection } from '@elexis/router';
 import { $Searchbar } from './component/Searchbar/$Searchbar';
 import { $IonIcon } from './component/IonIcon/$IonIcon';
+import { $IconButton } from './component/IconButton/$IconButton';
 // declare elexis module
 declare module 'elexis' {
   export namespace $ {
       export interface TagNameElementMap {
-        'ion-icon': typeof $IonIcon
+        'ion-icon': typeof $IonIcon;
+        'icon-button': typeof $IconButton;
       } 
   }
 }
 $.registerTagName('ion-icon', $IonIcon)
+$.registerTagName('icon-button', $IconButton)
 $.anchorHandler = ($a) => { $.open($a.href(), $a.target())}
 // settings
 export const [danbooru, safebooru]: Booru[] = [
@@ -48,12 +51,15 @@ $(document.body).content([
       $('ion-icon').class('search').name('search-outline').title('Search')
         .self($self => $Router.events.on('stateChange', ({beforeURL, afterURL}) => {if (beforeURL.hash === '#search') $self.hide(false); if (afterURL.hash === '#search') $self.hide(true)}))
         .on('click', () => $.open(location.href + '#search')),
-      // Switch Button
+      // Switch Booru
       $('ion-icon').class('switch').name('swap-horizontal').title('Switch Booru')
         .on('click', () => {
           if (Booru.used === danbooru) Booru.set(safebooru);
           else Booru.set(danbooru);
-        })
+        }),
+      // Open Booru
+      $('ion-icon').class('open').name('open-outline').title('Open in Original Site')
+        .on('click', () => $.open(location.href.replace(location.origin, Booru.used.origin))),
     ])
   ]),
   // Searchbar

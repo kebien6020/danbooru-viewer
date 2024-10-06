@@ -96,6 +96,7 @@ export class Post extends $EventManager<{update: []}> {
     get approver() { if (this.approver_id) return User.manager.get(this.approver_id); else return null }
     get isVideo() { return this.file_ext === 'mp4' || this.file_ext === 'webm' || this.file_ext === 'zip' }
     get isGif() { return this.file_ext === 'gif' }
+    get isUgoria() { return this.file_ext === 'zip' }
     get hasSound() { return this.tag_string_meta.includes('sound') }
     get tags() { 
         const tag_list = this.tag_string.split(' ');

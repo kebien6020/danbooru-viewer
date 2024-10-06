@@ -1,0 +1,19 @@
+button.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem;
+    background-color: transparent;
+    ion-icon {
+        font-size: 1.5rem;
+    }
+
+    &:hover {
+        background-color: var(--background-color-light);
+    }
+
+    &.vertical {
+        flex-direction: column;
+    }
+}
