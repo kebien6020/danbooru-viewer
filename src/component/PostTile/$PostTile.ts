@@ -46,14 +46,14 @@ export class $PostTile extends $Container {
                     .once('load', (e, $img) => {
                         $img
                             .src(this.post.previewURL)
-                            .on(['mouseenter', 'touchstart'], () => { if (this.post.isGif) { $img.src(this.post.large_file_url) } })
-                            .on(['mouseleave', 'touchend', 'touchcancel'], () => { if (this.post.isGif) { $img.src(this.post.previewURL) } })
+                            .on(['mouseenter', 'touchstart'], () => { if (this.post.isGif) { $img.src(this.post.large_file_url) } }, {passive: true})
+                            .on(['mouseleave', 'touchend', 'touchcancel'], () => { if (this.post.isGif) { $img.src(this.post.previewURL) } }, {passive: true})
                             .animate({opacity: [0, 1]}, {duration: 300, fill: 'both'});
                         this.removeClass('loading');
                     })
             ])
-                .on(['mouseenter', 'touchstart'], () => { if (!this.$video?.isPlaying) { this.$video?.src(this.post.large_file_url).hide(false).play().catch(err => undefined) } })
-                .on(['mouseleave', 'touchend', 'touchcancel'], () => { this.$video?.pause().currentTime(0).hide(true); })
+                .on(['mouseenter', 'touchstart'], () => { if (!this.$video?.isPlaying) { this.$video?.src(this.post.large_file_url).hide(false).play().catch(err => undefined) } }, {passive: true})
+                .on(['mouseleave', 'touchend', 'touchcancel'], () => { this.$video?.pause().currentTime(0).hide(true); }, {passive: true})
         ])
     }
 

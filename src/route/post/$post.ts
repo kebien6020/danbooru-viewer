@@ -29,53 +29,60 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
         $('div').class('sidebar')
             .self($sidebar => {
                 let scrollTop = 0;
-                addEventListener('scroll', () => { if ($sidebar.inDOM()) scrollTop = document.documentElement.scrollTop })
+                addEventListener('scroll', () => { if ($sidebar.inDOM()) scrollTop = document.documentElement.scrollTop }, {passive: true})
                 $route
                     .on('beforeShift', () => { if (innerWidth > 800) $sidebar.css({position: `absolute`, top: `calc(${scrollTop}px + var(--nav-height) + var(--padding))`}) })
                     .on('afterShift', () => $sidebar.css({position: '', top: ''}))
             })
             .content([
                 $('section').class('post-info').content([
-                    new $Property('id').name('Post').value(`#${params.id}`),
-                    new $Property('uploader').name('Uploader').value(post.uploader$),
-                    new $Property('approver').name('Approver').value(post.approver$),
-                    new $Property('date').name('Date').value(post.created_date$),
-                    new $Property('size').name('Size').value([post.file_size$, post.dimension$]),
-                    new $Property('file').name('File Type').value(post.file_ext$),
+                    new $Property('id').name('Post').content(`#${params.id}`),
+                    new $Property('uploader').name('Uploader').content(post.uploader$),
+                    new $Property('approver').name('Approver').content(post.approver$),
+                    new $Property('date').name('Date').content(post.created_date$),
+                    new $Property('size').name('Size').content([post.file_size$, post.dimension$]),
+                    new $Property('file-type').name('File Type').content(post.file_ext$),
                     $('div').class('inline').content([
-                        new $Property('favorites').name('Favorites').value(post.favorites$),
-                        new $Property('score').name('Score').value(post.score$)
+                        new $Property('favorites').name('Favorites').content(post.favorites$),
+                        new $Property('score').name('Score').content(post.score$)
                     ]),
-                    $('div').class('buttons').content([
-                        $('icon-button').class('vertical').icon('link-outline').content(Booru.name$)
-                            .on('click', (e, $button) => {
-                                e.preventDefault();
-                                navigator.clipboard.writeText(`${Booru.used.origin}${location.pathname}`);
-                                $button.content('Copied!');
-                                setTimeout(() => {
-                                    $button.content(Booru.name$)
-                                }, 2000);
-                            }),
-                        $('icon-button').class('vertical').icon('link-outline').content(`File`)
-                            .on('click', (e, $button) => {
-                                e.preventDefault();
-                                navigator.clipboard.writeText(post.file_url);
-                                $button.content('Copied!');
-                                setTimeout(() => {
-                                    $button.content('File')
-                                }, 2000);
-                            }),
-                        $('icon-button').class('vertical').icon('link-outline').content(`Webm`)
-                            .on('click', (e, $button) => {
-                                e.preventDefault();
-                                navigator.clipboard.writeText(post.previewURL);
-                                $button.content('Copied!');
-                                setTimeout(() => {
-                                    $button.content('Webm')
-                                }, 2000);
-                            })
-                            .hide(true).self(async ($button) => { await post.ready; if (post.file_ext === 'zip') $button.hide(false) })
-                    ]),
+                    new $Property('file-url').name('File').content($('a').href(post.file_url$).content(post.file_url$.convert((value) => value.replace('https://', ''))).target('_blank')),
+                    new $Property('source-url').name('Source').content($('a').href(post.source$).content(post.source$.convert((value) => value.replace('https://', ''))).target('_blank')),
+                    new $Property('booru-url').name(Booru.name$).content($('a').href(post.url$).content(post.url$.convert((value) => value.replace('https://', ''))).target('_blank')),
+                    new $Property('booru-url').name('Webm').hide(true).self(async ($property) => {
+                        await post.ready;
+                        if (post.isUgoria) $property.content($('a').href(post.webm_url$).content(post.webm_url$.convert((value) => value.replace('https://', ''))).target('_blank')).hide(false);
+                    }),
+                    // $('div').class('buttons').content([
+                    //     $('icon-button').class('vertical').icon('link-outline').content(Booru.name$)
+                    //         .on('click', (e, $button) => {
+                    //             e.preventDefault();
+                    //             navigator.clipboard.writeText(`${Booru.used.origin}${location.pathname}`);
+                    //             $button.content('Copied!');
+                    //             setTimeout(() => {
+                    //                 $button.content(Booru.name$)
+                    //             }, 2000);
+                    //         }),
+                    //     $('icon-button').class('vertical').icon('link-outline').content(`File`)
+                    //         .on('click', (e, $button) => {
+                    //             e.preventDefault();
+                    //             navigator.clipboard.writeText(post.file_url);
+                    //             $button.content('Copied!');
+                    //             setTimeout(() => {
+                    //                 $button.content('File')
+                    //             }, 2000);
+                    //         }),
+                    //     $('icon-button').class('vertical').icon('link-outline').content(`Webm`)
+                    //         .on('click', (e, $button) => {
+                    //             e.preventDefault();
+                    //             navigator.clipboard.writeText(post.previewURL);
+                    //             $button.content('Copied!');
+                    //             setTimeout(() => {
+                    //                 $button.content('Webm')
+                    //             }, 2000);
+                    //         })
+                    //         .hide(true).self(async ($button) => { await post.ready; if (post.file_ext === 'zip') $button.hide(false) })
+                    // ]),
                 ]),
                 $('div').class('post-tags').content(async $tags => {
                     const tags = await post.fetchTags();
@@ -116,9 +123,9 @@ class $Property extends $Container {
     constructor(id: string) {
         super('div');
         this.staticClass('property').attribute('property-id', id);
-        this.content([
+        super.content([
             this.$name,
-            this.$values
+            this.$values.hide(true)
         ])
     }
 
@@ -127,7 +134,8 @@ class $Property extends $Container {
         return this;
     }
 
-    value(content: OrMatrix<$ContainerContentType>) {
+    content(content: OrMatrix<$ContainerContentType>) {
+        this.$values.hide(false);
         const list = $.orArrayResolve(content);
         this.$values.content(list.map($item => $('span').staticClass('property-value').content($item)));
         return this;

@@ -66,7 +66,7 @@ export interface UserData {
 }
 
 export type UserLevel = 10 | 20 | 30 | 31 | 32 | 40 | 50;
-export type UserLevelString = "Member" | "Gold" | "Platinum" | "Admin";
+export type UserLevelString = "Member" | "Gold" | "Platinum" | "Admin" | "Contributor" | "Builder" | "Approver";
 
 export interface UserProfileData extends UserData {
     "last_logged_in_at": ISOString,

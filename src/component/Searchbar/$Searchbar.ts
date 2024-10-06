@@ -1,6 +1,8 @@
 import { $Container } from "elexis";
 import { Tag, TagCategory } from "../../structure/Tag";
 import { Booru } from "../../structure/Booru";
+import { User } from "../../structure/User";
+import { Autocomplete } from "../../structure/Autocomplete";
 
 export class $Searchbar extends $Container {
     $tagInput = new $TagInput(this);
@@ -128,21 +130,31 @@ export class $Searchbar extends $Container {
     async getSearchSuggestions() {
         const input = this.$tagInput.$input.value()
         if (!input.length) return this.$selectionList.clearSelections();
-        const tags = await Tag.fetchMultiple(Booru.used, {fuzzy_name_matches: input, order: 'similarity'});
+        const results = await Autocomplete.fetch(Booru.used, input, 20);
         this.$selectionList
             .clearSelections()
-            .addSelections(tags.map(tag => new $Selection().value(tag.name)
+            .addSelections(results.map(data => new $Selection().value(data.value)
                 .content([
-                    $('span').class('tag-name').content(tag.name),
-                    $('span').class('tag-category').content(TagCategory[tag.category])
+                    $('div').class('selection-label').content([
+                        data.isTagAntecedent() ? $('span').class('tag-antecedent').self($span => $span.dom.innerHTML = data.antecedent.replaceAll(input, `<b>${input}</b>`)) : null,
+                        $('div').class('label-container').content([ 
+                            data.isTagAntecedent() ? $('ion-icon').name('arrow-forward-outline') : null,
+                            $('span').class('label').self($span => $span.dom.innerHTML = data.label.replaceAll(input, `<b>${input}</b>`))
+                        ])
+                    ]),
+                    data.isTag() ? $('div').class('tag-detail').content([
+                        $('span').class('tag-post-count').content(new Intl.NumberFormat('en', {notation: 'compact'}).format(data.post_count)),
+                        $('span').class('tag-category').content(TagCategory[data.category])
+                    ]) : null,
+                    data.isUser() ? $('span').class('user-level').content(data.level) : null
                 ])
-                .on('click', () => {this.$tagInput.addTag(tag.name).input()})
+                .on('click', () => {this.$tagInput.addTag(data.label).input()})
             ))
         if (!this.$tagInput.$input.value().length) this.$selectionList.clearSelections();
     }
 
     search() {
-        $.replace(`/posts?tags=${this.$tagInput.query}`);
+        $.replace(`/posts?tags=${this.$tagInput.query.replace(':', '%3A')}`);
         this.$tagInput.clearAll();
         this.inactivate();
         return this;
@@ -177,10 +189,12 @@ class $SelectionList extends $Container {
         return this;
     }
 
-    focusSelection(selection: $Selection) {
+    focusSelection($selection: $Selection) {
         this.blurSelection();
-        this.focused = selection;
-        selection.focus();
+        this.focused = $selection;
+        $selection.focus();
+        if ($selection.offsetTop < this.scrollTop()) this.scrollTop($selection.offsetTop);
+        if ($selection.offsetTop + $selection.offsetHeight > this.scrollTop() + this.offsetHeight) this.scrollTop($selection.offsetTop + $selection.offsetHeight - this.offsetHeight);
         return this;
     }
 

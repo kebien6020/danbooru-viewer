@@ -16,9 +16,13 @@ export class Post extends $EventManager<{update: []}> {
     score$ = $.state(0);
     file_size$ = $.state(LOADING_STRING);
     file_ext$ = $.state(LOADING_STRING);
+    file_url$ = $.state(LOADING_STRING);
+    source$ = $.state(LOADING_STRING);
     dimension$ = $.state(LOADING_STRING);
+    url$ = $.state(LOADING_STRING);
     createdDate = new Date(this.created_at);
     ready?: Promise<this>;
+    webm_url$ = $.state(LOADING_STRING);
 
     booru: Booru;
     constructor(booru: Booru, id: id, data?: PostData) {
@@ -56,6 +60,7 @@ export class Post extends $EventManager<{update: []}> {
         }
         const req = await fetch(`${booru.origin}/posts.json?limit=${limit}&tags=${tagsQuery}&_method=get`);
         const dataArray: PostData[] = await req.json();
+        if (dataArray instanceof Array === false) return [];
         const list = dataArray.map(data => {
             const instance = booru.posts.get(data.id)?.update(data) ?? new this(booru, data.id, data);
             booru.posts.set(instance.id, instance);
@@ -75,7 +80,11 @@ export class Post extends $EventManager<{update: []}> {
         this.score$.set(this.score);
         this.file_size$.set(digitalUnit(this.file_size));
         this.file_ext$.set(this.file_ext as any);
+        this.file_url$.set(this.file_url);
+        this.source$.set(this.source);
         this.dimension$.set(`${this.image_width}x${this.image_height}`);
+        this.url$.set(`${this.url}`);
+        if (this.isUgoria) this.webm_url$.set(this.large_file_url);
         this.createdDate = new Date(this.created_at);
         this.fire('update');
     }
@@ -102,7 +111,8 @@ export class Post extends $EventManager<{update: []}> {
         const tag_list = this.tag_string.split(' ');
         return [...this.booru.tags.values()].filter(tag => tag_list.includes(tag.name))
     }
-    get previewURL() { return this.media_asset.variants.find(variant => variant.file_ext === 'webp')?.url ?? this.large_file_url }
+    get previewURL() { return this.media_asset.variants?.find(variant => variant.file_ext === 'webp')?.url ?? this.large_file_url }
+    get url() { return `${this.booru.origin}/posts/${this.id}` }
 }
 
 export interface PostData extends PostOptions {

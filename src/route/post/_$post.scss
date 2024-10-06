@@ -129,14 +129,22 @@
             display: flex;
             gap: 0.6rem;
             align-items: center;
+            width: 100%;
+            span.property-name {
+                flex-shrink: 0;
+            }
             div.property-values {
                 display: flex;
                 gap: 0.4rem;
+                overflow: hidden;
                 span.property-value {
                     background-color: var(--secondary-color-dark);
                     color: var(--secondary-color);
                     padding: 2px 4px;
                     border-radius: 4px;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    text-wrap: nowrap;
                 }
             }
         }

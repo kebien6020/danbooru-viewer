@@ -81,6 +81,7 @@ searchbar {
                 align-items: center;
                 padding: 0.4rem 1rem;
                 cursor: pointer;
+                gap: 1rem;
 
                 &:hover {
                     background-color: color-mix(in srgb, var(--background-color-lighter) 50%, transparent);
@@ -88,9 +89,30 @@ searchbar {
                 &.active {
                     background-color: var(--background-color-lighter);
                 }
-                .tag-name {
+                div.selection-label {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.5rem;
+                    .label-container {
+                        display: flex;
+                        gap: 0.5rem;
+                        align-items: center;
+
+                        ion-icon {
+                            font-size: 1rem;
+                        }
+                    }
                 }
-                .tag-category {
+
+                div.tag-detail {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    .tag-post-count {
+                        font-size: 0.8rem;
+                    }
+                }
+                .tag-category, .user-level {
                     padding: 0.1rem 0.4rem;
                     border-radius: 0.4rem;
                     font-size: 0.9rem;

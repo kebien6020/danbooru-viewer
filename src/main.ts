@@ -81,7 +81,7 @@ $(document.body).content([
         switch ($Router.navigationDirection) {
           case $RouterNavigationDirection.Forward: return [`translateX(${TX}%)`, `translateX(0%)`];
           case $RouterNavigationDirection.Back: return [`translateX(-${TX}%)`, `translateX(0%)`];
-          case $RouterNavigationDirection.Replace: return undefined;
+          case $RouterNavigationDirection.Replace: return '';
         }
       })
       e.$view.content(e.nextContent);
@@ -102,7 +102,7 @@ $(document.body).content([
         switch ($Router.navigationDirection) {
           case $RouterNavigationDirection.Forward: return [`translateX(0%)`, `translateX(-${TX}%)`];
           case $RouterNavigationDirection.Back: return [`translateX(0%)`, `translateX(${TX}%)`];
-          case $RouterNavigationDirection.Replace: return undefined;
+          case $RouterNavigationDirection.Replace: return '';
         }
       })
 

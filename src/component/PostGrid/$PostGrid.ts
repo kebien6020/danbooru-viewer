@@ -10,6 +10,7 @@ export class $PostGrid extends $Layout {
     posts = new Set<Post>();
     $posts = new Set<$PostTile>();
     tags?: string;
+    finished = false;
     constructor(options?: $PostGridOptions) {
         super();
         this.tags = options?.tags;
@@ -20,7 +21,13 @@ export class $PostGrid extends $Layout {
 
     protected async init() {
         setInterval(() => { if (this.inDOM() && document.documentElement.scrollTop === 0) this.updateNewest(); }, 10000);
-        Booru.events.on('set', () => { this.removeAll(); })
+        Booru.events.on('set', () => {
+            this.removeAll();
+            if (this.finished) { 
+                this.finished = false;
+                this.loader(); 
+            } 
+        })
         this.on('resize', () => this.resize())
         this.loader();
     }
@@ -28,10 +35,13 @@ export class $PostGrid extends $Layout {
     protected async loader() {
         if (!this.inDOM()) return setTimeout(() => this.loader(), 100);;
         while (this.inDOM() && document.documentElement.scrollHeight <= innerHeight * 2) {
-            await this.getPosts();
-            if (!this.posts.size) return;
+            const posts = await this.getPosts();
+            if (!posts.length) return this.finished = true;
         }
-        if (document.documentElement.scrollTop + innerHeight > document.documentElement.scrollHeight - innerHeight * 2) await this.getPosts();
+        if (document.documentElement.scrollTop + innerHeight > document.documentElement.scrollHeight - innerHeight * 2) {
+            const posts = await this.getPosts();
+            if (!posts.length) return this.finished = true;
+        }
         setTimeout(() => this.loader(), 100);
     }
 
@@ -65,14 +75,14 @@ export class $PostGrid extends $Layout {
         const latestPost = this.sortedPosts.at(0);
         const posts = await Post.fetchMultiple(Booru.used, {tags: this.tags, id: latestPost ? `>${latestPost.id}` : undefined}, 100);
         this.addPost(posts);
-        return this;
+        return posts;
     }
 
     async getPosts() {
         const oldestPost = this.sortedPosts.at(-1);
         const posts = await Post.fetchMultiple(Booru.used, {tags: this.tags, id: oldestPost ? `<${oldestPost.id}` : undefined}, 100);
         this.addPost(posts);
-        return this;
+        return posts;
     }
 
     get sortedPosts() { return this.posts.array.sort((a, b) => +b.createdDate - +a.createdDate); }
