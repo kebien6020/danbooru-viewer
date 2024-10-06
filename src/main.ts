@@ -2,7 +2,7 @@ import 'elexis';
 import '@elexis/layout';
 import '@elexis/router';
 import { Booru, type BooruOptions } from './structure/Booru';
-import { post_route } from './route/post/$post';
+import { post_route } from './route/post/$post_route';
 import { $PostGrid } from './component/PostGrid/$PostGrid';
 import { $Router, $RouterNavigationDirection } from '@elexis/router';
 import { $Searchbar } from './component/Searchbar/$Searchbar';
