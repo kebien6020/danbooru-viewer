@@ -45,47 +45,56 @@ nav {
     position: fixed;
     top: 0;
     z-index: 100;
-    background-color: var(--background-color);
+    background-color: color-mix(in srgb, var(--background-color) 70%, transparent);
     justify-content: space-between;
     align-items: center;
     padding-inline: 1rem;
     box-sizing: border-box;
+    backdrop-filter: blur(3px);
 
-    div.title {
+    a.title {
         display: flex;
         align-items: center;
         gap: 0.4rem;
-        a.booru-name {
+        text-decoration: none;
+        .booru-name {
             color: var(--secondary-color);
-            text-decoration: none;
-            h1 {
-                margin: 0;
+            margin: 0;
+        }
+
+        .app {
+            display: flex;
+            align-items: center;
+            border-radius: 0.4rem;
+            // border: 1px solid var(--secondary-color);
+            // padding: 0.2rem 0.4rem;
+            margin: 0;
+            gap: 0.4rem;
+            .version {
+                color: var(--background-color);
+                background-color: var(--secondary-color);
+                padding: 0.2em 0.4em;
+                border-radius: 0.4rem;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+            .app-name {
+                display: none;
+                font-size: 1rem;
+                color: var(--secondary-color);
             }
         }
-        a.version {
-            color: var(--background-color);
-            background-color: var(--secondary-color);
-            padding: 0.2em 0.4em;
-            border-radius: 0.4rem;
-            font-size: 0.8rem;
-            text-decoration: none;
-        }
-    }
-    button {
-        padding: 2px 4px;
-        border-radius: 0.4rem;
-        border: none;
     }
     div.searchbar {
         padding: 0.4rem 10%;
         max-width: 500px;
-        background-color: var(--background-color);
+        background-color: color-mix(in srgb, var(--background-color-light) 30%, transparent);
         border: 1px solid var(--primary-color-darker);
         border-radius: 0.4rem;
         color: var(--primary-color-dark);
+        transition: 0.3s all ease;
         cursor: pointer;
         &:hover {
-            background-color: var(--background-color-light);
             color: var(--primary-color);
         }
     }
@@ -94,12 +103,12 @@ nav {
         align-items: center;
         gap: 1rem;
         ion-icon {
-            background-color: var(--background-color);
+            // background-color: var(--background-color);
             transition: all 0.3s ease;
             border-radius: 1rem;
             padding: 0.4rem;
             &:hover {
-                background-color: var(--background-color-lighter);
+                background-color: color-mix(in srgb, var(--background-color-lighter) 50%, transparent);
             }
         }
         ion-icon.search {
@@ -120,12 +129,12 @@ nav {
 router {
     display: block;
     position: relative;
-    padding-top: var(--nav-height);
 
     route {
         display: block;
         position: relative;
         padding-inline: 10px;
+        padding-top: var(--nav-height);
     }
 }
 

@@ -1,5 +1,6 @@
 #post {
     padding: 0;
+    padding-top: var(--nav-height);
     section {
         background-color: #2f2f45;
         border-radius: 20px;
@@ -39,7 +40,7 @@
     }
 
     div.content {
-        width: calc(100vw - 300px - 4rem);
+        width: calc(100vw - 300px - 2rem);
         display: flex;
         flex-direction: column;
         padding: 1rem;
@@ -73,9 +74,10 @@
     }
 
     div.sidebar {
+        --padding: 1rem;
         position: fixed;
-        top: calc(var(--nav-height) + 1rem);
-        right: 1rem;
+        top: calc(var(--nav-height) + var(--padding));
+        right: var(--padding);
         display: flex;
         flex-direction: column;
         gap: 0.4rem;

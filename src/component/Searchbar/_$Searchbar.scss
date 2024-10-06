@@ -10,7 +10,7 @@ searchbar {
 
     div.input-container {
         margin-top: 0.4rem;
-        background-color: var(--background-color-light);
+        background-color: color-mix(in srgb, var(--background-color-light) 70%, transparent);
         border-radius: 0.4rem;
         font-size: 1rem;
         width: 500px;
@@ -70,6 +70,10 @@ searchbar {
             overflow-y: scroll;
             overflow-x: hidden;
             position: relative;
+
+            &::-webkit-scrollbar {
+                width: 4px;
+            }
 
             selection {
                 display: flex;

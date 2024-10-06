@@ -31,7 +31,7 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
                 let scrollTop = 0;
                 addEventListener('scroll', () => { if ($sidebar.inDOM()) scrollTop = document.documentElement.scrollTop })
                 $route
-                    .on('beforeShift', () => { if (innerWidth > 800) $sidebar.css({position: `absolute`, top: `${scrollTop}px`}) })
+                    .on('beforeShift', () => { if (innerWidth > 800) $sidebar.css({position: `absolute`, top: `calc(${scrollTop}px + var(--nav-height) + var(--padding))`}) })
                     .on('afterShift', () => $sidebar.css({position: '', top: ''}))
             })
             .content([

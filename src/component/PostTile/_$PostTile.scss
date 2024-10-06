@@ -23,7 +23,7 @@ post-tile {
     &:active {
         transform: scale(0.95);
     }
-    div.video-detail {
+    div.video-detail, div.gif-detail {
         position: absolute;
         background-color: var(--background-color-lighter);//color-mix(in srgb, var(--background-color-lighter) 80%, transparent);
         color: var(--primary-color);

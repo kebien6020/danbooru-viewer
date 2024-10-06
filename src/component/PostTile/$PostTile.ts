@@ -1,4 +1,4 @@
-import { $Container, $State, $Video } from "elexis";
+import { $Container, $Image, $State, $Video } from "elexis";
 import type { Post } from "../../structure/Post";
 import { time } from "../../structure/Util";
 export class $PostTile extends $Container {
@@ -8,7 +8,7 @@ export class $PostTile extends $Container {
     constructor(post: Post) {
         super('post-tile');
         this.post = post;
-        this.$video = this.post.isVideo ? $('video').width(this.post.image_width).height(this.post.image_height).disablePictureInPicture(true).loop(true).muted(true).hide(true) : null;
+        this.$video = this.post.isVideo ? $('video').width(this.post.image_width).height(this.post.image_height).disablePictureInPicture(true).loop(true).muted(true).hide(true).on('mousedown', (e) => e.preventDefault()) : null;
         this.attribute('filetype', this.post.file_ext);
         this.durationUpdate();
         this.build();
@@ -32,33 +32,27 @@ export class $PostTile extends $Container {
                     this.post.hasSound ? $('ion-icon').name('volume-medium-outline') : null,
                     $('span').class('duration').content(this.duration$) 
                 ]) : null,
+            // Gif
+            this.post.isGif
+                ? $('div').class('gif-detail').content([
+                    $('span').content('GIF')
+                ]) : null,
             // Tile
             $('a').href(this.post.pathname).content(() => [
                 this.$video,
                 $('img').draggable(false).css({opacity: '0'}).width(this.post.image_width).height(this.post.image_height).src(this.post.previewURL).loading('lazy')
                     .on('mousedown', (e) => e.preventDefault())
                     .once('load', (e, $img) => {
-                        if (!this.post.isVideo) $img.src(this.post.previewURL);
-                        $img.animate({opacity: [0, 1]}, {duration: 300, fill: 'both'});
-                        this.removeClass('loading')
+                        $img
+                            .src(this.post.previewURL)
+                            .on(['mouseenter', 'touchstart'], () => { if (this.post.isGif) { $img.src(this.post.large_file_url) } })
+                            .on(['mouseleave', 'touchend', 'touchcancel'], () => { if (this.post.isGif) { $img.src(this.post.previewURL) } })
+                            .animate({opacity: [0, 1]}, {duration: 300, fill: 'both'});
+                        this.removeClass('loading');
                     })
             ])
-                .on('mouseenter', () => {
-                    if (!this.$video?.isPlaying) {
-                        this.$video?.src(this.post.large_file_url).hide(false).play().catch(err => undefined)
-                    }
-                })
-                .on('mouseleave', () => {
-                    this.$video?.pause().currentTime(0).hide(true);
-                })
-                .on('touchstart', () => {
-                    if (!this.$video?.isPlaying) {
-                        this.$video?.src(this.post.large_file_url).hide(false).play().catch(err => undefined)
-                    }
-                })
-                .on('touchend', () => {
-                    this.$video?.pause().currentTime(0).hide(true);
-                })
+                .on(['mouseenter', 'touchstart'], () => { if (!this.$video?.isPlaying) { this.$video?.src(this.post.large_file_url).hide(false).play().catch(err => undefined) } })
+                .on(['mouseleave', 'touchend', 'touchcancel'], () => { this.$video?.pause().currentTime(0).hide(true); })
         ])
     }
 

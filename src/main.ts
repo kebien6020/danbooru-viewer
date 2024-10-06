@@ -31,9 +31,12 @@ $(document.body).content([
   // Navigation Bar
   $('nav').content([
     // Title
-    $('div').class('title').content([
-      $('a').class('booru-name').content([$('h1').content(Booru.name$)]).href('/'),
-      $('a').class('version').target('_blank').content(`v${__APP_VERSION__}`).href(`https://git.defaultkavy.com/defaultkavy/danbooru-viewer`)
+    $('a').class('title').href('/').content([
+      $('h1').class('booru-name').content(Booru.name$),
+      $('h2').class('app').content([
+        $('span').class('app-name').content(`Viewer`),
+        $('span').class('version').content(`v${__APP_VERSION__}`)
+      ])
     ]),
     // Searchbar
     $('div').class('searchbar').content(['Search in ', Booru.name$])
@@ -65,13 +68,21 @@ $(document.body).content([
     post_route
   ]).on('beforeSwitch', (e) => {
     const DURATION = 300;
+    const TX = 2;
     e.preventDefault();
     function intro() {
+      const transform = $.call(() => {
+        switch ($Router.navigationDirection) {
+          case $RouterNavigationDirection.Forward: return [`translateX(${TX}%)`, `translateX(0%)`];
+          case $RouterNavigationDirection.Back: return [`translateX(-${TX}%)`, `translateX(0%)`];
+          case $RouterNavigationDirection.Replace: return undefined;
+        }
+      })
       e.$view.content(e.nextContent);
       e.rendered();
       e.nextContent.element?.class('animated').animate({
         opacity: [0, 1],
-        transform: $Router.navigationDirection === $RouterNavigationDirection.Forward ? [`translateX(40%)`, `translateX(0%)`] : [`translateX(-40%)`, `translateX(0%)`]
+        transform
       }, {
         duration: DURATION,
         easing: 'ease'
@@ -81,9 +92,17 @@ $(document.body).content([
       })
     }
     function outro() {
+      const transform = $.call(() => {
+        switch ($Router.navigationDirection) {
+          case $RouterNavigationDirection.Forward: return [`translateX(0%)`, `translateX(-${TX}%)`];
+          case $RouterNavigationDirection.Back: return [`translateX(0%)`, `translateX(${TX}%)`];
+          case $RouterNavigationDirection.Replace: return undefined;
+        }
+      })
+
       e.previousContent?.element?.class('animated').animate({
         opacity: [1, 0],
-        transform: $Router.navigationDirection === $RouterNavigationDirection.Forward ? [`translateX(0%)`, `translateX(-40%)`] : [`translateX(0%)`, `translateX(40%)`]
+        transform
       }, {
         duration: DURATION,
         easing: 'ease'
