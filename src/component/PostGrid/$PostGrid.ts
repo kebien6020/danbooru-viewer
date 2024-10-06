@@ -63,14 +63,14 @@ export class $PostGrid extends $Layout {
 
     async updateNewest() {
         const latestPost = this.sortedPosts.at(0);
-        const posts = await Post.fetchMultiple(Booru.used, {tags: this.tags, id: latestPost ? `>${latestPost.id}` : undefined});
+        const posts = await Post.fetchMultiple(Booru.used, {tags: this.tags, id: latestPost ? `>${latestPost.id}` : undefined}, 100);
         this.addPost(posts);
         return this;
     }
 
     async getPosts() {
         const oldestPost = this.sortedPosts.at(-1);
-        const posts = await Post.fetchMultiple(Booru.used, {tags: this.tags, id: oldestPost ? `<${oldestPost.id}` : undefined});
+        const posts = await Post.fetchMultiple(Booru.used, {tags: this.tags, id: oldestPost ? `<${oldestPost.id}` : undefined}, 100);
         this.addPost(posts);
         return this;
     }

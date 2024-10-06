@@ -25,30 +25,46 @@ export class $PostTile extends $Container {
             clearInterval(timer);
             this.durationUpdate();
         })
-        this.content([
-            this.post.isVideo ? $('span').class('duration').content(this.duration$) : null,
+        this.class('loading').content([
+            // Video Detail
+            this.post.isVideo 
+                ? $('div').class('video-detail').content([
+                    this.post.hasSound ? $('ion-icon').name('volume-medium-outline') : null,
+                    $('span').class('duration').content(this.duration$) 
+                ]) : null,
+            // Tile
             $('a').href(this.post.pathname).content(() => [
                 this.$video,
-                $('img').css({opacity: '0'}).width(this.post.image_width).height(this.post.image_height).src(this.post.preview_file_url).loading('lazy')
+                $('img').draggable(false).css({opacity: '0'}).width(this.post.image_width).height(this.post.image_height).src(this.post.previewURL).loading('lazy')
+                    .on('mousedown', (e) => e.preventDefault())
                     .once('load', (e, $img) => {
-                        if (!this.post.isVideo) $img.src(this.post.large_file_url);
+                        if (!this.post.isVideo) $img.src(this.post.previewURL);
                         $img.animate({opacity: [0, 1]}, {duration: 300, fill: 'both'});
+                        this.removeClass('loading')
                     })
             ])
-            .on('mouseenter', () => {
-                if (!this.$video?.isPlaying) {
-                    this.$video?.src(this.post.large_file_url).hide(false).play().catch(err => undefined)
-                }
-            })
-            .on('mouseleave', () => {
-                this.$video?.pause().currentTime(0).hide(true);
-            })
+                .on('mouseenter', () => {
+                    if (!this.$video?.isPlaying) {
+                        this.$video?.src(this.post.large_file_url).hide(false).play().catch(err => undefined)
+                    }
+                })
+                .on('mouseleave', () => {
+                    this.$video?.pause().currentTime(0).hide(true);
+                })
+                .on('touchstart', () => {
+                    if (!this.$video?.isPlaying) {
+                        this.$video?.src(this.post.large_file_url).hide(false).play().catch(err => undefined)
+                    }
+                })
+                .on('touchend', () => {
+                    this.$video?.pause().currentTime(0).hide(true);
+                })
         ])
     }
 
     durationUpdate() {
         if (!this.$video) return;
         const t = time(this.post.media_asset.duration * 1000 - this.$video.currentTime() * 1000)
-        this.duration$.set(`${t.hh}:${t.mm}:${t.ss}`)
+        this.duration$.set(Number(t.hh) > 0 ? `${t.hh}:${t.mm}:${t.ss}` : `${t.mm}:${t.ss}`)
     }
 }

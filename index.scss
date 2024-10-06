@@ -31,6 +31,7 @@ html {
     }
 }
 body {
+    overflow-x: hidden;
     background-color: var(--background-color);
     color: var(--primary-color);
     margin: 0;

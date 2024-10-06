@@ -3,25 +3,35 @@ import { Booru } from "./Booru";
 import { Tag } from "./Tag";
 import { User } from "./User";
 import { dateFrom, digitalUnit } from "./Util";
+
+const LOADING_STRING = '...'
+
 export interface PostOptions {}
 export interface Post extends PostData {}
 export class Post extends $EventManager<{update: []}> {
-    uploader$ = $.state(this.uploader?.name$ ?? this.uploader_id?.toString());
-    approver$ = $.state(this.approver?.name$ ?? this.approver_id?.toString() ?? 'None');
-    created_date$ = $.state(``);
-    favorites$ = $.state(this.fav_count);
-    score$ = $.state(this.score);
-    file_size$ = $.state('');
-    file_ext$ = $.state(this.file_ext);
-    dimension$ = $.state('');
+    uploader$ = $.state(LOADING_STRING);
+    approver$ = $.state(LOADING_STRING);
+    created_date$ = $.state(LOADING_STRING);
+    favorites$ = $.state(0);
+    score$ = $.state(0);
+    file_size$ = $.state(LOADING_STRING);
+    file_ext$ = $.state(LOADING_STRING);
+    dimension$ = $.state(LOADING_STRING);
     createdDate = new Date(this.created_at);
+    ready?: Promise<this>;
 
     booru: Booru;
-    constructor(booru: Booru, id: id) {
+    constructor(booru: Booru, id: id, data?: PostData) {
         super();
         this.booru = booru;
         this.id = id;
         booru.posts.set(this.id, this);
+        if (data) this.update(data);
+        else this.ready = this.fetch();
+    }
+
+    static get(booru: Booru, id: id) {
+        return booru.posts.get(id) ?? new Post(booru, id);
     }
 
     async fetch() {
@@ -47,8 +57,7 @@ export class Post extends $EventManager<{update: []}> {
         const req = await fetch(`${booru.origin}/posts.json?limit=${limit}&tags=${tagsQuery}&_method=get`);
         const dataArray: PostData[] = await req.json();
         const list = dataArray.map(data => {
-            const instance = booru.posts.get(data.id)?.update(data) ?? new this(booru, data.id);
-            instance.update(data);
+            const instance = booru.posts.get(data.id)?.update(data) ?? new this(booru, data.id, data);
             booru.posts.set(instance.id, instance);
             return instance;
         });
@@ -78,6 +87,7 @@ export class Post extends $EventManager<{update: []}> {
     }
 
     async fetchTags() {
+        await this.ready;
         return await Tag.fetchMultiple(this.booru, {name: {_space: this.tag_string}});
     }
 
@@ -85,10 +95,12 @@ export class Post extends $EventManager<{update: []}> {
     get uploader() { return User.manager.get(this.uploader_id); }
     get approver() { if (this.approver_id) return User.manager.get(this.approver_id); else return null }
     get isVideo() { return this.file_ext === 'mp4' || this.file_ext === 'webm' || this.file_ext === 'zip' }
+    get hasSound() { return this.tag_string_meta.includes('sound') }
     get tags() { 
         const tag_list = this.tag_string.split(' ');
         return [...this.booru.tags.values()].filter(tag => tag_list.includes(tag.name))
     }
+    get previewURL() { return this.media_asset.variants.find(variant => variant.file_ext === 'webp')?.url ?? this.large_file_url }
 }
 
 export interface PostData extends PostOptions {

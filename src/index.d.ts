@@ -11,7 +11,7 @@ type Source = 'http' | `https://${string}` | `*${string}*` | 'none'
 type Ratio = `${numebr}:${numebr}` | `${number}/${number}` | number
 type FileSize = `${number}${FileSizeUnit}`
 type FileSizeUnit = 'b' | 'kb' | 'm'
-type FileType = 'jpg' | 'png' | 'gif' | 'swf' | 'webm' | 'mp4' | 'zip'
+type FileType = 'jpg' | 'png' | 'gif' | 'swf' | 'webm' | 'mp4' | 'zip' | 'webp'
 type seconds = number;
 type poolname = string;
 

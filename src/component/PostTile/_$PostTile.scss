@@ -2,37 +2,62 @@ post-tile {
     display: block;
     transition: 0.3s all ease;
     position: relative;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 
-
-        &[filetype="mp4"], &[filetype="webm"], &[filetype="zip"] {
-            span.duration {
-                background-color: #ffffff;
-                color: #000000;
-            }
+    @media (hover: hover) {
+        &:hover {
+            transform: scale(1.02);
+            z-index: 1;
+            box-shadow: 0 0 10px color-mix(in srgb, var(--background-color) 50%, transparent)
         }
+    }
+
+    &.loading {
+        transition: none;
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+    div.video-detail {
+        position: absolute;
+        background-color: var(--background-color-lighter);//color-mix(in srgb, var(--background-color-lighter) 80%, transparent);
+        color: var(--primary-color);
+        bottom: 0.3rem;
+        right: 0.3rem;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+        z-index: 2;
+        // text-shadow: 0 0 0.5em var(--background-color);
+
+        ion-icon {
+            font-size: 1.5em;
+        }
+
         span.duration {
-            position: absolute;
-            background-color: #00000050;
-            bottom: 0.3rem;
-            right: 0.3rem;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-size: 12px;
             text-transform: uppercase;
             z-index: 2;
         }
-        img {
-            border-radius: 10px;
-            height: 100%;
-            width: 100%;
-            vertical-align: top;
-        }
-        video {
-            border-radius: 10px;
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
-            position: absolute;
-            z-index: 1;
-        }
+    }
+    img {
+        height: 100%;
+        width: 100%;
+        vertical-align: top;
+        background-color: var(--background-color);
+    }
+    video {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        position: absolute;
+        z-index: 1;
+    }
 }
