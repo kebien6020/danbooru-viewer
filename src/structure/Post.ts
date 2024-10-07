@@ -113,6 +113,7 @@ export class Post extends $EventManager<{update: []}> {
     }
     get previewURL() { return this.media_asset.variants?.find(variant => variant.file_ext === 'webp')?.url ?? this.large_file_url }
     get url() { return `${this.booru.origin}/posts/${this.id}` }
+    get isFileSource() { return this.source.startsWith('file://') }
 }
 
 export interface PostData extends PostOptions {

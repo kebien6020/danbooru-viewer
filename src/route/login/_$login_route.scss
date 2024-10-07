@@ -1,0 +1,27 @@
+route#login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5rem;
+
+    .login-container {
+        padding: 2rem;
+        border: 1px solid var(--secondary-color);
+        border-radius: var(--border-radius-large);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1rem;
+        h1 {
+            margin: 0;
+        }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            input {
+                width: 300px;
+            }
+        }
+    }
+}

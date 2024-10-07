@@ -8,6 +8,8 @@ import { $Router, $RouterNavigationDirection } from '@elexis/router';
 import { $Searchbar } from './component/Searchbar/$Searchbar';
 import { $IonIcon } from './component/IonIcon/$IonIcon';
 import { $IconButton } from './component/IconButton/$IconButton';
+import { $login_route } from './route/login/$login_route';
+import { $Drawer } from './component/Drawer/$Drawer';
 // declare elexis module
 declare module 'elexis' {
   export namespace $ {
@@ -28,7 +30,8 @@ export const [danbooru, safebooru]: Booru[] = [
 ]
 Booru.set(Booru.manager.get(Booru.storageAPI ?? '') ?? danbooru);
 const $searchbar = new $Searchbar().hide(true);
-if (location.hash === '#search') $searchbar.activate();
+const $drawer = new $Drawer();
+
 // render
 $(document.body).content([
   // Navigation Bar
@@ -60,10 +63,24 @@ $(document.body).content([
       // Open Booru
       $('ion-icon').class('open').name('open-outline').title('Open in Original Site')
         .on('click', () => $.open(location.href.replace(location.origin, Booru.used.origin))),
+      // Menu Button
+      $('ion-icon').class('menu').name('menu-outline').title('Menu').hide(false)
+        .self(($icon) => { Booru.events.on('login', () => $icon.hide(true)).on('logout', () => $icon.hide(false)) })
+        .on('click', () => $.open(location.href + '#drawer')),
+      // Account Menu
+      $('div').class('account').hide(true).title('Menu')
+        .self(($account) => {
+          Booru.events
+            .on('login', user => { $account.content(user.name$.convert(value => value.at(0)?.toUpperCase() ?? '')).hide(false); })
+            .on('logout', () => $account.hide(true))
+        })
+        .on('click', () => $.open(location.href + '#drawer'))
     ])
   ]),
   // Searchbar
   $searchbar,
+  // Drawer
+  $drawer,
   // Base Router
   $('router').base('/').map([
     // Home Page
@@ -71,7 +88,9 @@ $(document.body).content([
     // Posts Page
     $('route').id('posts').path('/posts?tags').builder(({query}) => new $PostGrid({tags: query.tags})),
     // Post Page
-    post_route
+    post_route,
+    // Login Page
+    $login_route
   ]).on('beforeSwitch', (e) => {
     const DURATION = 300;
     const TX = 2;
@@ -123,4 +142,9 @@ $(document.body).content([
   })
 ])
 
-$Router.events.on('stateChange', ({beforeURL, afterURL}) => { $searchbar.checkURL(beforeURL, afterURL) })
+$Router.events.on('stateChange', ({beforeURL, afterURL}) => componentState(beforeURL, afterURL))
+componentState(undefined, new URL(location.href))
+
+function componentState(beforeURL: URL | undefined, afterURL: URL) {
+  $searchbar.checkURL(beforeURL, afterURL); $drawer.checkURL(beforeURL, afterURL)
+}

@@ -1,6 +1,7 @@
 import { $EventManager, type $EventMap } from "elexis";
 import type { Post } from "./Post";
 import type { Tag } from "./Tag";
+import { ClientUser, type ClientUserData } from "./ClientUser";
 
 export interface BooruOptions {
     origin: string;
@@ -9,9 +10,10 @@ export interface BooruOptions {
 export interface Booru extends BooruOptions {}
 export class Booru {
     static used: Booru;
-    static events = new $EventManager<BooruEventMap>();
+    static events = new $EventManager<BooruStaticEventMap>();
     static name$ = $.state(this.name);
     static manager = new Map<string, Booru>()
+    user?: ClientUser;
     posts = new Map<id, Post>();
     tags = new Map<id, Tag>();
     constructor(options: BooruOptions) {
@@ -24,6 +26,8 @@ export class Booru {
         this.used = booru;
         this.name$.set(booru.name);
         this.storageAPI = booru.name;
+        const userdata = ClientUser.storageUserData;
+        if (userdata) booru.login(userdata.username, userdata.apiKey);
         this.events.fire('set');
         return this;
     }
@@ -31,8 +35,33 @@ export class Booru {
     static get storageAPI() { return localStorage.getItem('booru_api'); }
     static set storageAPI(name: string | null) { if (name) localStorage.setItem('booru_api', name); else localStorage.removeItem('booru_api') }
 
+    async fetch<T>(endpoint: string) {
+        const data = await fetch(`${this.origin}${endpoint}`).then(res => res.json()) as any;
+        if (data.success === false) throw data.message;
+        return data as T;
+    }
+
+    async login(username: string, apiKey: string) {
+        const data = await this.fetch<ClientUserData>(`/profile.json?login=${username}&api_key=${apiKey}`);
+        this.user = new ClientUser(this, apiKey, data);
+        Booru.events.fire('login', this.user);
+        return this.user;
+    }
+
+    logout() {
+        this.user = undefined;
+        ClientUser.storageUserData = null;
+        Booru.events.fire('logout');
+        return this
+    }
+
+}
+
+interface BooruStaticEventMap extends $EventMap {
+    set: [];
+    login: [user: ClientUser];
+    logout: [];
 }
 
 interface BooruEventMap extends $EventMap {
-    set: []
 }

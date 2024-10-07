@@ -1,10 +1,9 @@
 import type { Booru } from "./Booru";
 
-const INTL_number = new Intl.NumberFormat('en', {notation: 'compact'})
 export interface TagOptions {}
 export interface Tag extends TagData {}
 export class Tag {
-    post_count$ = $.state(0, {format: (value) => `${INTL_number.format(value)}`});
+    post_count$ = $.state(0);
     name$ = $.state('');
     booru: Booru;
     constructor(booru: Booru, data: TagData) {

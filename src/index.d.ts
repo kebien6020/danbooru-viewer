@@ -45,7 +45,10 @@ type TextSyntaxComparisons<T> =
     { _lower_space: string }
 
 type UserSyntax = { _id: id } | { _name: username };
-
 type ChainingSyntax = {_id: id} | {has_: boolean};
-
 type PostSyntax = {_id: id} | {_tags_match: string};
+interface APIError {
+    success: false;
+    error: string;
+    message: string;
+}

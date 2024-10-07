@@ -4,6 +4,7 @@ import { Tag, TagCategory } from "../../structure/Tag";
 import { ArtistCommentary } from "../../structure/Commentary";
 import { Booru } from "../../structure/Booru";
 import type { $IonIcon } from "../../component/IonIcon/$IonIcon";
+import { numberFormat } from "../../modules";
 
 export const post_route = $('route').path('/posts/:id').id('post').builder(({$route, params}) => {
     if (!Number(params.id)) return $('h1').content('404: POST NOT FOUND');
@@ -87,7 +88,7 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
                             $('section').content([
                                 tags.map(tag => $('div').class('tag').content([
                                     $('a').class('tag-name').content(tag.name).href(`/posts?tags=${tag.name}`),
-                                    $('span').class('tag-post-count').content(tag.post_count$)
+                                    $('span').class('tag-post-count').content(tag.post_count$.convert(numberFormat))
                                 ]))
                             ])
                         ] : null

@@ -11,7 +11,7 @@ export class $IconButton extends $Button {
 
     private build() {
         super.content([
-            this.$icon,
+            this.$icon.hide(true),
             this.$label
         ])
     }
@@ -22,7 +22,12 @@ export class $IconButton extends $Button {
     }
 
     icon(name: string) {
-        this.$icon.name(name);
+        this.$icon.name(name).hide(false);
+        return this;
+    }
+
+    link(url: string, replace = false) {
+        this.on('click', () => replace ? $.replace(url) : $.open(url));
         return this;
     }
 }

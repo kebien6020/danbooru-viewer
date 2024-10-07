@@ -3,6 +3,7 @@
 @import '/src/component/PostTile/$PostTile';
 @import '/src/component/Searchbar/$Searchbar';
 @import '/src/component/IconButton/$IconButton';
+@import '/src/component/Drawer/$Drawer';
 // routes
 @import '/src/route/post/$post_route';
 @import '/src/route/login/$login_route';
@@ -11,12 +12,15 @@
     --background-color: #1e1e2c;
     --background-color-lighter: #3b3b66;
     --background-color-light: #24243b;
+    --background-color-dark: #12121f;
+    --background-color-darker: #07070c;
     --primary-color: #d1d1ee;
     --primary-color-dark: #9696b3;
     --primary-color-darker: #72728d;
     --secondary-color: #aeaeec;
     --secondary-color-dark: #6d6da1;
     --secondary-color-darker: #424268;
+    --shadow-color: #09090e50;
 
     --border-radius-small: 0.4rem;
     --border-radius-medium: 0.8rem;
@@ -154,7 +158,7 @@ router {
     route {
         display: block;
         position: relative;
-        padding-inline: 10px;
+        padding-inline: 1rem;
         padding-top: var(--nav-height);
     }
 }

@@ -1,8 +1,8 @@
 import { $Container } from "elexis";
 import { Tag, TagCategory } from "../../structure/Tag";
 import { Booru } from "../../structure/Booru";
-import { User } from "../../structure/User";
 import { Autocomplete } from "../../structure/Autocomplete";
+import { numberFormat } from "../../modules";
 
 export class $Searchbar extends $Container {
     $tagInput = new $TagInput(this);
@@ -143,7 +143,7 @@ export class $Searchbar extends $Container {
                         ])
                     ]),
                     data.isTag() ? $('div').class('tag-detail').content([
-                        $('span').class('tag-post-count').content(new Intl.NumberFormat('en', {notation: 'compact'}).format(data.post_count)),
+                        $('span').class('tag-post-count').content(numberFormat(data.post_count)),
                         $('span').class('tag-category').content(TagCategory[data.category])
                     ]) : null,
                     data.isUser() ? $('span').class('user-level').content(data.level) : null
@@ -160,8 +160,8 @@ export class $Searchbar extends $Container {
         return this;
     }
 
-    checkURL(beforeURL: URL, afterURL: URL) {
-        if (beforeURL.hash === '#search') this.inactivate();
+    checkURL(beforeURL: URL | undefined, afterURL: URL) {
+        if (beforeURL?.hash === '#search') this.inactivate();
         if (afterURL.hash === '#search') this.activate();
     }
 }
