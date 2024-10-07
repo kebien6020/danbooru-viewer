@@ -36,7 +36,8 @@ export class Booru {
     static set storageAPI(name: string | null) { if (name) localStorage.setItem('booru_api', name); else localStorage.removeItem('booru_api') }
 
     async fetch<T>(endpoint: string) {
-        const data = await fetch(`${this.origin}${endpoint}`).then(res => res.json()) as any;
+        const auth = this.user ? `${endpoint.includes('?') ? '&' : '?'}login=${this.user.name}&api_key=${this.user.apiKey}` : '';
+        const data = await fetch(`${this.origin}${endpoint}${auth}`).then(res => res.json()) as any;
         if (data.success === false) throw data.message;
         return data as T;
     }

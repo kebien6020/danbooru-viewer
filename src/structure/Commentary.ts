@@ -8,8 +8,8 @@ export class ArtistCommentary {
     }
 
     static async fetch(booru: Booru, id: id) {
-        const req = await fetch(`${booru.origin}/artist_commentaries/${id}.json`);
-        const post = new this(await req.json());
+        const data = await booru.fetch<ArtistCommentaryData>(`/artist_commentaries/${id}.json`);
+        const post = new this(data);
         return post;
     }
 
@@ -26,8 +26,7 @@ export class ArtistCommentary {
                 else searchQuery += `&search[${key}]=${val}`
             }
         }
-        const req = await fetch(`${booru.origin}/artist_commentaries.json?limit=${limit}${searchQuery}`);
-        const dataArray: ArtistCommentaryData[] = await req.json();
+        const dataArray = await booru.fetch<ArtistCommentaryData[]>(`/artist_commentaries.json?limit=${limit}${searchQuery}`);
         const list = dataArray.map(data => {
             const instance = new this(data);
             this.manager.set(instance.id, instance);

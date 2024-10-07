@@ -13,7 +13,7 @@ export class Tag {
     }
 
     static async fetch(booru: Booru, id: id) {
-        const data = await fetch(`${booru.origin}/tags/${id}.json`).then(async data => await data.json()) as TagData;
+        const data = await booru.fetch<TagData>(`/tags/${id}.json`);
         const instance = booru.tags.get(data.id)?.update(data) ?? new this(booru, data);
         booru.tags.set(instance.id, instance);
         return instance;
@@ -32,8 +32,7 @@ export class Tag {
                 else searchQuery += `&search[${key}]=${val}`
             }
         }
-        const req = await fetch(`${booru.origin}/tags.json?limit=${limit}${searchQuery}`);
-        const dataArray: TagData[] = await req.json();
+        const dataArray = await booru.fetch<TagData[]>(`/tags.json?limit=${limit}${searchQuery}`);
         const list = dataArray.map(data => {
             const instance = booru.tags.get(data.id)?.update(data) ?? new this(booru, data);
             booru.tags.set(instance.id, instance);

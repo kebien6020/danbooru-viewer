@@ -62,6 +62,7 @@ export class $Searchbar extends $Container {
         const addTag = () => {e.preventDefault(); this.$tagInput.addTag().input()}
         const addSelectedTag = ($selection: $Selection) => {
             const inputIndex = this.$tagInput.children.indexOf(this.$tagInput.$inputor);
+            if (this.$tagInput.$input.value().at(-1) === ':') return this.getSearchSuggestions();
             const nextTag = this.$tagInput.children.array.at(inputIndex + 1) as $Tag;
             this.$tagInput.addTag($selection.value());
             if (nextTag) this.$tagInput.editTag(nextTag);
@@ -94,7 +95,7 @@ export class $Searchbar extends $Container {
                 e.preventDefault();
                 const inputIndex = this.$tagInput.children.indexOf(this.$tagInput.$inputor)
                 if (e.shiftKey) {
-                    this.$tagInput.editTag(this.$tagInput.children.array.at(inputIndex - 1) as $Tag)
+                    if (inputIndex - 1 >= 0) this.$tagInput.editTag(this.$tagInput.children.array.at(inputIndex - 1) as $Tag)
                     break;
                 }
                 if (this.$selectionList.focused) addSelectedTag(this.$selectionList.focused);
@@ -128,8 +129,7 @@ export class $Searchbar extends $Container {
     }
 
     async getSearchSuggestions() {
-        const input = this.$tagInput.$input.value()
-        if (!input.length) return this.$selectionList.clearSelections();
+        const input = this.$tagInput.$input.value();
         const results = await Autocomplete.fetch(Booru.used, input, 20);
         this.$selectionList
             .clearSelections()
@@ -148,9 +148,8 @@ export class $Searchbar extends $Container {
                     ]) : null,
                     data.isUser() ? $('span').class('user-level').content(data.level) : null
                 ])
-                .on('click', () => {this.$tagInput.addTag(data.label).input()})
+                .on('click', () => {this.$tagInput.addTag(data.value).input()})
             ))
-        if (!this.$tagInput.$input.value().length) this.$selectionList.clearSelections();
     }
 
     search() {
@@ -163,6 +162,10 @@ export class $Searchbar extends $Container {
     checkURL(beforeURL: URL | undefined, afterURL: URL) {
         if (beforeURL?.hash === '#search') this.inactivate();
         if (afterURL.hash === '#search') this.activate();
+        if (`${beforeURL?.pathname}${beforeURL?.search}` === `${afterURL.pathname}${afterURL.search}`) return;
+        const tags_string = afterURL.searchParams.get('tags');
+        this.$tagInput.clearAll();
+        tags_string?.split(' ').forEach(tag => this.$tagInput.addTag(tag));
     }
 }
 
@@ -269,8 +272,8 @@ class $TagInput extends $Container {
     input() {
         this.insert(this.$inputor);
         this.$input.focus();
-        if (this.$input.value()) this.$seachbar.getSearchSuggestions();
-        else this.$seachbar.$selectionList.clearSelections();
+        this.$seachbar.$selectionList.clearSelections();
+        this.$seachbar.getSearchSuggestions();
         return this;
     }
 
@@ -281,7 +284,8 @@ class $TagInput extends $Container {
         $tag.on('click', () => this.editTag($tag))
         this.tags.add($tag);
         this.value('');
-        this.$inputor.replace($tag);
+        if (this.$input.inDOM()) this.$inputor.replace($tag);
+        else this.insert($tag);
         return this;
     }
 
@@ -306,6 +310,11 @@ class $TagInput extends $Container {
         if (value === undefined) return this;
         this.$input.value(value);
         this.$sizer.content(value);
+        return this;
+    }
+
+    focus() {
+        this.$input.focus();
         return this;
     }
 

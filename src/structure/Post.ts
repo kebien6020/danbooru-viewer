@@ -39,7 +39,7 @@ export class Post extends $EventManager<{update: []}> {
     }
 
     async fetch() {
-        const data = await fetch(`${this.booru.origin}/posts/${this.id}.json`).then(async data => await data.json()) as PostData;
+        const data = await this.booru.fetch<PostData>(`/posts/${this.id}.json`);
         this.update(data);
         User.fetchMultiple(this.booru, {id: [this.uploader_id, this.approver_id].detype(null)}).then(() => this.update$());
         return this;
@@ -58,8 +58,7 @@ export class Post extends $EventManager<{update: []}> {
                 }
             }
         }
-        const req = await fetch(`${booru.origin}/posts.json?limit=${limit}&tags=${tagsQuery}&_method=get`);
-        const dataArray: PostData[] = await req.json();
+        const dataArray = await booru.fetch<PostData[]>(`/posts.json?limit=${limit}&tags=${tagsQuery}&_method=get`);
         if (dataArray instanceof Array === false) return [];
         const list = dataArray.map(data => {
             const instance = booru.posts.get(data.id)?.update(data) ?? new this(booru, data.id, data);
