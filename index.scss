@@ -9,17 +9,19 @@
 @import '/src/route/login/$login_route';
 
 :root {
-    --background-color: #1e1e2c;
-    --background-color-lighter: #3b3b66;
-    --background-color-light: #24243b;
-    --background-color-dark: #12121f;
-    --background-color-darker: #07070c;
     --primary-color: #d1d1ee;
     --primary-color-dark: #9696b3;
     --primary-color-darker: #72728d;
-    --secondary-color: #aeaeec;
-    --secondary-color-dark: #6d6da1;
-    --secondary-color-darker: #424268;
+    --secondary-color-9: #aeaeec;
+    --secondary-color-8: #9a9ad6;
+    --secondary-color-7: #7c7cb8;
+    --secondary-color-6: #646497;
+    --secondary-color-5: #545486;
+    --secondary-color-4: #424268;
+    --secondary-color-3: #3b3b66;
+    --secondary-color-2: #24243b;
+    --secondary-color-1: #1e1e2c; // background color
+    --secondary-color-0: #07070c;
     --shadow-color: #09090e50;
 
     --border-radius-small: 0.4rem;
@@ -32,7 +34,7 @@ html {
     font-size: 14px;
 
     ::-webkit-scrollbar {
-        background-color: var(--background-color);
+        background-color: var(--secondary-color-1);
         width: 8px;
     }
 
@@ -43,7 +45,7 @@ html {
 }
 body {
     overflow-x: hidden;
-    background-color: var(--background-color);
+    background-color: var(--secondary-color-1);
     color: var(--primary-color);
     margin: 0;
     font-family: Microsoft Yahei;
@@ -56,7 +58,7 @@ nav {
     position: fixed;
     top: 0;
     z-index: 100;
-    background-color: color-mix(in srgb, var(--background-color) 70%, transparent);
+    background-color: color-mix(in srgb, var(--secondary-color-1) 70%, transparent);
     justify-content: space-between;
     align-items: center;
     padding-inline: 1rem;
@@ -69,7 +71,7 @@ nav {
         gap: 0.4rem;
         text-decoration: none;
         .booru-name {
-            color: var(--secondary-color);
+            color: var(--secondary-color-9);
             margin: 0;
         }
 
@@ -77,13 +79,13 @@ nav {
             display: flex;
             align-items: center;
             border-radius: var(--border-radius-small);
-            // border: 1px solid var(--secondary-color);
+            // border: 1px solid var(--secondary-color-9);
             // padding: 0.2rem 0.4rem;
             margin: 0;
             gap: 0.4rem;
             .version {
-                color: var(--background-color);
-                background-color: var(--secondary-color);
+                color: var(--secondary-color-1);
+                background-color: var(--secondary-color-9);
                 padding: 0.2em 0.4em;
                 border-radius: var(--border-radius-small);
                 font-size: 0.8rem;
@@ -92,14 +94,14 @@ nav {
             .app-name {
                 display: none;
                 font-size: 1rem;
-                color: var(--secondary-color);
+                color: var(--secondary-color-9);
             }
         }
     }
     div.searchbar {
         padding: 0.4rem 10%;
         max-width: 500px;
-        background-color: color-mix(in srgb, var(--background-color-light) 30%, transparent);
+        background-color: color-mix(in srgb, var(--secondary-color-2) 30%, transparent);
         border: 1px solid var(--primary-color-darker);
         border-radius: var(--border-radius-small);
         color: var(--primary-color-dark);
@@ -114,12 +116,12 @@ nav {
         align-items: center;
         gap: 1rem;
         ion-icon {
-            // background-color: var(--background-color);
+            // background-color: var(--secondary-color-1);
             transition: all 0.3s ease;
             border-radius: 1rem;
             padding: 0.4rem;
             &:hover {
-                background-color: color-mix(in srgb, var(--background-color-lighter) 50%, transparent);
+                background-color: color-mix(in srgb, var(--secondary-color-3) 50%, transparent);
             }
         }
         ion-icon.search {
@@ -134,8 +136,8 @@ nav {
             align-items: center;
             border-radius: 2rem;
             font-weight: bolder;
-            color: var(--secondary-color);
-            background-color: var(--secondary-color-darker);
+            color: var(--secondary-color-9);
+            background-color: var(--secondary-color-4);
             user-select: none;
             cursor: pointer;
         }
@@ -163,16 +165,26 @@ router {
     }
 }
 
+route#posts {
+
+    header {
+        margin-bottom: 1rem;
+        h2 {
+            margin: 0;
+        }
+    }
+}
+
 button {
-    background-color: var(--secondary-color-darker);
-    color: var(--secondary-color);
+    background-color: var(--secondary-color-4);
+    color: var(--secondary-color-9);
     padding: 0.8rem 1.2rem;
     border-radius: 1rem;
     border: none;
     cursor: pointer;
 
     &:hover {
-        background-color: var(--secondary-color-dark);
+        background-color: var(--secondary-color-6);
         color: var(--primary-color);
     }
 }
@@ -183,24 +195,24 @@ ion-icon {
     cursor: pointer;
     
     &:hover {
-        color: var(--secondary-color);
+        color: var(--secondary-color-9);
     }
 }
 
 a {
-    color: var(--secondary-color);
     text-decoration: none;
+    color: var(--secondary-color-9);
 }
 
 input {
-    background-color: var(--background-color-light);
+    background-color: var(--secondary-color-2);
     border-radius: var(--border-radius-small);
-    border: 1px solid var(--background-color-lighter);
+    border: 1px solid var(--secondary-color-3);
     font-size: 0.9rem;
     padding: 0.8rem 1.2rem;
     color: var(--primary-color);
     outline: none;
     &:focus {
-        border-color: var(--secondary-color);
+        border-color: var(--secondary-color-9);
     }
 }

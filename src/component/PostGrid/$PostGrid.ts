@@ -1,4 +1,4 @@
-import { $Layout } from "@elexis/layout";
+import { $Layout, type $LayoutEventMap } from "@elexis/layout";
 import { Booru } from "../../structure/Booru";
 import { Post } from "../../structure/Post";
 import { $PostTile } from "../PostTile/$PostTile";
@@ -6,7 +6,7 @@ import { $PostTile } from "../PostTile/$PostTile";
 interface $PostGridOptions {
     tags?: string
 }
-export class $PostGrid extends $Layout {
+export class $PostGrid extends $Layout<$PostGridEventMap> {
     posts = new Set<Post>();
     $posts = new Set<$PostTile>();
     tags?: string;
@@ -25,10 +25,12 @@ export class $PostGrid extends $Layout {
             this.removeAll();
             if (this.finished) { 
                 this.finished = false;
+                this.events.fire('startLoad');
                 this.loader(); 
             } 
         })
         this.on('resize', () => this.resize())
+        this.events.fire('startLoad');
         this.loader();
     }
 
@@ -36,11 +38,19 @@ export class $PostGrid extends $Layout {
         if (!this.inDOM()) return setTimeout(() => this.loader(), 100);;
         while (this.inDOM() && document.documentElement.scrollHeight <= innerHeight * 2) {
             const posts = await this.getPosts();
-            if (!posts.length) return this.finished = true;
+            if (!posts.length) {
+                this.finished = true;
+                if (!this.posts.size) this.events.fire('noPost');
+                return 
+            }
         }
         if (document.documentElement.scrollTop + innerHeight > document.documentElement.scrollHeight - innerHeight * 2) {
             const posts = await this.getPosts();
-            if (!posts.length) return this.finished = true;
+            if (!posts.length) {
+                this.finished = true;
+                this.events.fire('endPost');
+                return
+            }
         }
         setTimeout(() => this.loader(), 100);
     }
@@ -87,4 +97,10 @@ export class $PostGrid extends $Layout {
 
     get sortedPosts() { return this.posts.array.sort((a, b) => +b.createdDate - +a.createdDate); }
 
+}
+
+interface $PostGridEventMap extends $LayoutEventMap {
+    startLoad: [];
+    noPost: [];
+    endPost: [];
 }

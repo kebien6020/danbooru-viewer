@@ -10,7 +10,7 @@ searchbar {
 
     div.input-container {
         margin-top: 0.4rem;
-        background-color: color-mix(in srgb, var(--background-color-light) 100%, transparent);
+        background-color: color-mix(in srgb, var(--secondary-color-2) 100%, transparent);
         border-radius: var(--border-radius-small);
         font-size: 1rem;
         width: 500px;
@@ -20,7 +20,7 @@ searchbar {
         z-index: 201;
         display: flex;
         align-items: center;
-        border: 1px solid var(--secondary-color-darker);
+        border: 1px solid var(--secondary-color-4);
         
         &:focus-within {
             outline: none;
@@ -39,8 +39,8 @@ searchbar {
             tag {
                 display: inline-block;
                 padding: 0.2rem 0.4rem;
-                background-color: var(--secondary-color-darker);
-                color: var(--secondary-color);
+                background-color: var(--secondary-color-4);
+                color: var(--secondary-color-9);
                 border-radius: var(--border-radius-small);
                 cursor: pointer;
             }
@@ -48,10 +48,10 @@ searchbar {
 
         ion-icon {
             font-size: 20px;
-            color: var(--secondary-color-darker);
+            color: var(--secondary-color-4);
             cursor: pointer;
             &:hover {
-                color: var(--secondary-color);
+                color: var(--secondary-color-9);
             }
         }
     }
@@ -59,7 +59,7 @@ searchbar {
     div.selection-list-container {
         overflow: hidden;
         border-radius: var(--border-radius-small);
-        background-color: var(--background-color);
+        background-color: var(--secondary-color-1);
         z-index: 201;
         max-width: calc(100% - 2rem);
         width: 500px;
@@ -84,10 +84,10 @@ searchbar {
                 gap: 1rem;
 
                 &:hover {
-                    background-color: color-mix(in srgb, var(--background-color-lighter) 50%, transparent);
+                    background-color: color-mix(in srgb, var(--secondary-color-3) 50%, transparent);
                 }
                 &.active {
-                    background-color: var(--background-color-lighter);
+                    background-color: var(--secondary-color-3);
                 }
                 div.selection-label {
                     display: flex;
@@ -116,8 +116,8 @@ searchbar {
                     padding: 0.1rem 0.4rem;
                     border-radius: var(--border-radius-small);
                     font-size: 0.9rem;
-                    background-color: var(--secondary-color-darker);
-                    color: var(--secondary-color);
+                    background-color: var(--secondary-color-4);
+                    color: var(--secondary-color-9);
                 }
     
             }
@@ -125,7 +125,7 @@ searchbar {
     }
 
     div.filter {
-        background-color: var(--background-color);
+        background-color: var(--secondary-color-1);
         opacity: 0.5;
         position: fixed;
         top: 0;
@@ -137,7 +137,7 @@ searchbar {
 
 .input-wrapper {
     color: var(--primary-color);
-    border: 1px solid var(--secondary-color);
+    border: 1px solid var(--secondary-color-9);
     border-radius: var(--border-radius-small);
     position: relative;
     box-sizing: border-box;

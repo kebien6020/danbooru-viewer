@@ -84,9 +84,23 @@ $(document.body).content([
   // Base Router
   $('router').base('/').map([
     // Home Page
-    $('route').id('posts').path('/').builder(() => new $PostGrid()),
+    $('route').id('posts').path(['/', '/posts']).builder(() => new $PostGrid()),
     // Posts Page
-    $('route').id('posts').path('/posts?tags').builder(({query}) => new $PostGrid({tags: query.tags})),
+    $('route').id('posts').path('/posts?tags').builder(({query}) => {
+      const $postGrid = new $PostGrid({tags: query.tags});
+      return [
+        $('header').content([
+          $('h2').content('Posts'),
+          $('div').class('tags').self($div => {
+            query.tags.split('+').forEach(tag => {
+              $div.insert($('a').class('tag').content(decodeURIComponent(tag)).href(`posts?tags=${tag}`))
+            })
+          })
+        ]),
+        $('div').class('no-post').content('No Posts').hide(true).self($div => $postGrid.on('noPost', () => $div.hide(false)).on('startLoad', () => $div.hide(true))),
+        $postGrid
+      ]
+    }),
     // Post Page
     post_route,
     // Login Page

@@ -15,18 +15,18 @@ drawer {
         width: 300px;
         max-width: 70%;
         height: 100%;
-        background-color: var(--background-color);
+        background-color: var(--secondary-color-1);
         border-radius: var(--border-radius-large);
         z-index: 1;
         overflow: hidden;
 
         div.user-info {
-            background-color: var(--background-color-light);
+            background-color: var(--secondary-color-2);
             padding: 2rem;
 
             .username {
                 margin: 0;
-                color: var(--secondary-color);
+                color: var(--secondary-color-9);
                 cursor: pointer;
             }
 
@@ -68,8 +68,8 @@ drawer {
         height: 100%;
         width: 100%;
         background: linear-gradient(90deg, 
-            color-mix(in srgb, var(--background-color-dark) 50%, transparent) 0%, 
-            color-mix(in srgb, var(--background-color-darker) 70%, transparent) 100%
+            color-mix(in srgb, var(--secondary-color-1) 50%, transparent) 0%, 
+            color-mix(in srgb, var(--secondary-color-0) 70%, transparent) 100%
         );
     }
 }

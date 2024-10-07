@@ -12,7 +12,7 @@ post-tile {
         &:hover {
             transform: scale(1.02);
             z-index: 1;
-            box-shadow: 0 0 10px color-mix(in srgb, var(--background-color) 50%, transparent)
+            box-shadow: 0 0 10px color-mix(in srgb, var(--secondary-color-1) 50%, transparent)
         }
     }
 
@@ -25,7 +25,7 @@ post-tile {
     }
     div.video-detail, div.gif-detail {
         position: absolute;
-        background-color: var(--background-color-lighter);//color-mix(in srgb, var(--background-color-lighter) 80%, transparent);
+        background-color: var(--secondary-color-3);//color-mix(in srgb, var(--secondary-color-3) 80%, transparent);
         color: var(--primary-color);
         bottom: 0.3rem;
         right: 0.3rem;
@@ -37,7 +37,7 @@ post-tile {
         align-items: center;
         gap: 0.2rem;
         z-index: 2;
-        // text-shadow: 0 0 0.5em var(--background-color);
+        // text-shadow: 0 0 0.5em var(--secondary-color-1);
 
         ion-icon {
             font-size: 1.4rem;
@@ -53,17 +53,23 @@ post-tile {
             z-index: 2;
         }
     }
-    img {
-        height: 100%;
-        width: 100%;
-        vertical-align: top;
-        background-color: var(--background-color);
-    }
-    video {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        position: absolute;
-        z-index: 1;
+
+    a {
+        background-color: transparent;
+        padding: 0;
+        border-radius: 0;
+        img {
+            height: 100%;
+            width: 100%;
+            vertical-align: top;
+            background-color: var(--secondary-color-1);
+        }
+        video {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            position: absolute;
+            z-index: 1;
+        }
     }
 }

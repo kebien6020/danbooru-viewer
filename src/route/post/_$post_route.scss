@@ -139,17 +139,15 @@
                 width: 100%;
                 overflow: hidden;
                 span.property-value {
-                    padding: 2px 4px;
-                    background-color: var(--secondary-color-darker);
-                    color: var(--secondary-color);
+                    padding: 0.2rem 0.4rem;
+                    background-color: var(--secondary-color-1);
+                    color: var(--primary-color-dark);
                     border-radius: var(--border-radius-small);
                     justify-content: space-between;
                     flex-shrink: 1;
-
-                    &:has(*) {
-                        overflow: hidden;
-                        padding: 0;
-                    }
+                    display: flex;
+                    align-items: center;
+                    overflow: hidden;
 
                     &:has(ion-icon) {
                         flex-shrink: 0;
@@ -157,12 +155,12 @@
 
                     * {
                         display: block;
-                        padding: 2px 4px;
                         overflow: hidden;
                         text-wrap: nowrap;
                         text-overflow: ellipsis;
                         flex-shrink: 1;
                     }
+
                     ion-icon {
                         font-size: 1rem;
                         padding: 4px;
@@ -183,12 +181,11 @@
                 align-items: center;
                 a.tag-name {
                     word-break: break-word;
-                    color: #d1d1ee;
                     text-decoration: none;
                 }
                 span.tag-post-count {
-                    background-color: var(--secondary-color-darker);
-                    color: var(--secondary-color);
+                    background-color: var(--secondary-color-3);
+                    color: var(--secondary-color-8);
                     padding: 0px 4px;
                     border-radius: var(--border-radius-small);
                     font-size: 12px;
