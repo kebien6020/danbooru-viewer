@@ -11,7 +11,7 @@ searchbar {
     div.input-container {
         margin-top: 0.4rem;
         background-color: color-mix(in srgb, var(--background-color-light) 100%, transparent);
-        border-radius: 0.4rem;
+        border-radius: var(--border-radius-small);
         font-size: 1rem;
         width: 500px;
         padding: 0.4rem 0.4rem;
@@ -20,7 +20,7 @@ searchbar {
         z-index: 201;
         display: flex;
         align-items: center;
-        border: 1px solid var(--secondary-color-dark);
+        border: 1px solid var(--secondary-color-darker);
         
         &:focus-within {
             outline: none;
@@ -39,16 +39,16 @@ searchbar {
             tag {
                 display: inline-block;
                 padding: 0.2rem 0.4rem;
-                background-color: var(--secondary-color-dark);
+                background-color: var(--secondary-color-darker);
                 color: var(--secondary-color);
-                border-radius: 0.4rem;
+                border-radius: var(--border-radius-small);
                 cursor: pointer;
             }
         }
 
         ion-icon {
             font-size: 20px;
-            color: var(--secondary-color-dark);
+            color: var(--secondary-color-darker);
             cursor: pointer;
             &:hover {
                 color: var(--secondary-color);
@@ -58,7 +58,7 @@ searchbar {
 
     div.selection-list-container {
         overflow: hidden;
-        border-radius: 0.4rem;
+        border-radius: var(--border-radius-small);
         background-color: var(--background-color);
         z-index: 201;
         max-width: calc(100% - 2rem);
@@ -114,9 +114,9 @@ searchbar {
                 }
                 .tag-category, .user-level {
                     padding: 0.1rem 0.4rem;
-                    border-radius: 0.4rem;
+                    border-radius: var(--border-radius-small);
                     font-size: 0.9rem;
-                    background-color: var(--secondary-color-dark);
+                    background-color: var(--secondary-color-darker);
                     color: var(--secondary-color);
                 }
     
@@ -138,7 +138,7 @@ searchbar {
 .input-wrapper {
     color: var(--primary-color);
     border: 1px solid var(--secondary-color);
-    border-radius: 0.4rem;
+    border-radius: var(--border-radius-small);
     position: relative;
     box-sizing: border-box;
     line-height: 1em;

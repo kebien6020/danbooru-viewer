@@ -3,6 +3,7 @@ import { $Container, type $ContainerContentType } from "elexis";
 import { Tag, TagCategory } from "../../structure/Tag";
 import { ArtistCommentary } from "../../structure/Commentary";
 import { Booru } from "../../structure/Booru";
+import type { $IonIcon } from "../../component/IonIcon/$IonIcon";
 
 export const post_route = $('route').path('/posts/:id').id('post').builder(({$route, params}) => {
     if (!Number(params.id)) return $('h1').content('404: POST NOT FOUND');
@@ -46,43 +47,22 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
                         new $Property('favorites').name('Favorites').content(post.favorites$),
                         new $Property('score').name('Score').content(post.score$)
                     ]),
-                    new $Property('file-url').name('File').content($('a').href(post.file_url$).content(post.file_url$.convert((value) => value.replace('https://', ''))).target('_blank')),
-                    new $Property('source-url').name('Source').content($('a').href(post.source$).content(post.source$.convert((value) => value.replace('https://', ''))).target('_blank')),
-                    new $Property('booru-url').name(Booru.name$).content($('a').href(post.url$).content(post.url$.convert((value) => value.replace('https://', ''))).target('_blank')),
+                    new $Property('file-url').name('File').content([
+                        $('a').href(post.file_url$).content(post.file_url$.convert((value) => value.replace('https://', ''))).target('_blank'),
+                        $('ion-icon').name('clipboard').on('click', (e, $ion) => copyButtonHandler($ion, post.source))
+                    ]),
+                    new $Property('source-url').name('Source').content([
+                        $('a').href(post.source$).content(post.source$.convert((value) => value.replace('https://', ''))).target('_blank'),
+                        $('ion-icon').name('clipboard').on('click', (e, $ion) => copyButtonHandler($ion, post.source))
+                    ]),
+                    new $Property('booru-url').name(Booru.name$).content([
+                        $('a').href(post.url$).content(post.url$.convert((value) => value.replace('https://', ''))).target('_blank'),
+                        $('ion-icon').name('clipboard').on('click', (e, $ion) => copyButtonHandler($ion, post.source))
+                    ]),
                     new $Property('booru-url').name('Webm').hide(true).self(async ($property) => {
                         await post.ready;
                         if (post.isUgoria) $property.content($('a').href(post.webm_url$).content(post.webm_url$.convert((value) => value.replace('https://', ''))).target('_blank')).hide(false);
                     }),
-                    // $('div').class('buttons').content([
-                    //     $('icon-button').class('vertical').icon('link-outline').content(Booru.name$)
-                    //         .on('click', (e, $button) => {
-                    //             e.preventDefault();
-                    //             navigator.clipboard.writeText(`${Booru.used.origin}${location.pathname}`);
-                    //             $button.content('Copied!');
-                    //             setTimeout(() => {
-                    //                 $button.content(Booru.name$)
-                    //             }, 2000);
-                    //         }),
-                    //     $('icon-button').class('vertical').icon('link-outline').content(`File`)
-                    //         .on('click', (e, $button) => {
-                    //             e.preventDefault();
-                    //             navigator.clipboard.writeText(post.file_url);
-                    //             $button.content('Copied!');
-                    //             setTimeout(() => {
-                    //                 $button.content('File')
-                    //             }, 2000);
-                    //         }),
-                    //     $('icon-button').class('vertical').icon('link-outline').content(`Webm`)
-                    //         .on('click', (e, $button) => {
-                    //             e.preventDefault();
-                    //             navigator.clipboard.writeText(post.previewURL);
-                    //             $button.content('Copied!');
-                    //             setTimeout(() => {
-                    //                 $button.content('Webm')
-                    //             }, 2000);
-                    //         })
-                    //         .hide(true).self(async ($button) => { await post.ready; if (post.file_ext === 'zip') $button.hide(false) })
-                    // ]),
                 ]),
                 $('div').class('post-tags').content(async $tags => {
                     const tags = await post.fetchTags();
@@ -116,6 +96,12 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
             ])  
     ]
 })
+
+function copyButtonHandler($ion: $IonIcon, text: string) {
+    $ion.name('checkmark');
+    navigator.clipboard.writeText(text);
+    setTimeout(() => $ion.name('clipboard'), 3000);
+}
 
 class $Property extends $Container {
     $name = $('span').class('property-name')

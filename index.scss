@@ -1,8 +1,11 @@
+// components
 @import '/src/component/PostGrid/$PostGrid';
 @import '/src/component/PostTile/$PostTile';
 @import '/src/component/Searchbar/$Searchbar';
 @import '/src/component/IconButton/$IconButton';
+// routes
 @import '/src/route/post/$post_route';
+@import '/src/route/login/$login_route';
 
 :root {
     --background-color: #1e1e2c;
@@ -12,8 +15,12 @@
     --primary-color-dark: #9696b3;
     --primary-color-darker: #72728d;
     --secondary-color: #aeaeec;
-    --secondary-color-dark: #424268;
+    --secondary-color-dark: #6d6da1;
+    --secondary-color-darker: #424268;
 
+    --border-radius-small: 0.4rem;
+    --border-radius-medium: 0.8rem;
+    --border-radius-large: 1.2rem;
     --nav-height: 50px;
 }
 html {
@@ -65,7 +72,7 @@ nav {
         .app {
             display: flex;
             align-items: center;
-            border-radius: 0.4rem;
+            border-radius: var(--border-radius-small);
             // border: 1px solid var(--secondary-color);
             // padding: 0.2rem 0.4rem;
             margin: 0;
@@ -74,7 +81,7 @@ nav {
                 color: var(--background-color);
                 background-color: var(--secondary-color);
                 padding: 0.2em 0.4em;
-                border-radius: 0.4rem;
+                border-radius: var(--border-radius-small);
                 font-size: 0.8rem;
                 font-weight: bold;
             }
@@ -90,7 +97,7 @@ nav {
         max-width: 500px;
         background-color: color-mix(in srgb, var(--background-color-light) 30%, transparent);
         border: 1px solid var(--primary-color-darker);
-        border-radius: 0.4rem;
+        border-radius: var(--border-radius-small);
         color: var(--primary-color-dark);
         transition: 0.3s all ease;
         cursor: pointer;
@@ -113,6 +120,20 @@ nav {
         }
         ion-icon.search {
             display: none;
+        }
+
+        div.account {
+            height: 2rem;
+            width: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 2rem;
+            font-weight: bolder;
+            color: var(--secondary-color);
+            background-color: var(--secondary-color-darker);
+            user-select: none;
+            cursor: pointer;
         }
     }
 
@@ -139,12 +160,17 @@ router {
 }
 
 button {
-    background-color: var(--secondary-color-dark);
+    background-color: var(--secondary-color-darker);
     color: var(--secondary-color);
     padding: 0.8rem 1.2rem;
     border-radius: 1rem;
     border: none;
     cursor: pointer;
+
+    &:hover {
+        background-color: var(--secondary-color-dark);
+        color: var(--primary-color);
+    }
 }
 
 ion-icon {
@@ -160,4 +186,17 @@ ion-icon {
 a {
     color: var(--secondary-color);
     text-decoration: none;
+}
+
+input {
+    background-color: var(--background-color-light);
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--background-color-lighter);
+    font-size: 0.9rem;
+    padding: 0.8rem 1.2rem;
+    color: var(--primary-color);
+    outline: none;
+    &:focus {
+        border-color: var(--secondary-color);
+    }
 }
