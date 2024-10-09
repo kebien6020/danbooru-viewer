@@ -3,7 +3,6 @@ import type { Booru } from "./Booru";
 export class UserOptions {}
 export interface User extends UserOptions, UserData {}
 export class User {
-    static manager = new Map<id, User>();
     name$ = $.state('...');
     post_upload_count$ = $.state(0);
     level$ = $.state(10);
@@ -15,10 +14,17 @@ export class User {
         if (update$) this.update$();
     }
 
-    static async fetch(booru: Booru, id: id) {
-        const data = await booru.fetch<UserData>(`/users/${id}.json`);
-        const instance = this.manager.get(data.id)?.update(data) ?? new this(booru, data);
-        this.manager.set(instance.id, instance);
+    static async fetch(booru: Booru, id: username): Promise<User>;
+    static async fetch(booru: Booru, id: id): Promise<User>;
+    static async fetch(booru: Booru, id: id | username) {
+        let data: UserData;
+        if (typeof id === 'string') {
+            const res = (await booru.fetch<UserData[]>(`/users.json?search[name]=${id}`)).at(0);
+            if (!res) throw 'User Not Found';
+            return data = res;
+        } else data = await booru.fetch<UserData>(`/users/${id}.json`);
+        const instance = booru.users.get(data.id)?.update(data) ?? new this(booru, data);
+        booru.users.set(instance.id, instance);
         return instance;
     }
 
@@ -38,7 +44,7 @@ export class User {
         const dataArray = await booru.fetch<UserData[]>(`/users.json?limit=${limit}${searchQuery}`);
         const list = dataArray.map(data => {
             const instance = new this(booru, data);
-            this.manager.set(instance.id, instance);
+            booru.users.set(instance.id, instance);
             return instance;
         });
         return list;

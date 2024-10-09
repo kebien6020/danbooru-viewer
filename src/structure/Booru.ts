@@ -2,6 +2,7 @@ import { $EventManager, type $EventMap } from "elexis";
 import type { Post } from "./Post";
 import type { Tag } from "./Tag";
 import { ClientUser, type ClientUserData } from "./ClientUser";
+import type { User } from "./User";
 
 export interface BooruOptions {
     origin: string;
@@ -16,6 +17,7 @@ export class Booru {
     user?: ClientUser;
     posts = new Map<id, Post>();
     tags = new Map<id, Tag>();
+    users = new Map<id, User>();
     constructor(options: BooruOptions) {
         Object.assign(this, options);
         if (this.origin.endsWith('/')) this.origin = this.origin.slice(0, -1);

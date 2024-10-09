@@ -47,13 +47,13 @@ $(document.body).content([
     // Searchbar
     $('div').class('searchbar').content(['Search in ', Booru.name$])
       .self($self => $Router.events.on('stateChange', ({beforeURL, afterURL}) => {if (beforeURL.hash === '#search') $self.hide(false); if (afterURL.hash === '#search') $self.hide(true)}))
-      .on('click', () => $.open(location.href + '#search')),
+      .on('click', () => $searchbar.open()),
     // Buttons
     $('div').class('buttons').content([
       // Search Icon
       $('ion-icon').class('search').name('search-outline').title('Search')
         .self($self => $Router.events.on('stateChange', ({beforeURL, afterURL}) => {if (beforeURL.hash === '#search') $self.hide(false); if (afterURL.hash === '#search') $self.hide(true)}))
-        .on('click', () => $.open(location.href + '#search')),
+        .on('click', () => $searchbar.open()),
       // Switch Booru
       $('ion-icon').class('switch').name('swap-horizontal').title('Switch Booru')
         .on('click', () => {
@@ -74,7 +74,7 @@ $(document.body).content([
             .on('login', user => { $account.content(user.name$.convert(value => value.at(0)?.toUpperCase() ?? '')).hide(false); })
             .on('logout', () => $account.hide(true))
         })
-        .on('click', () => $.open(location.href + '#drawer'))
+        .on('click', () => $drawer.open())
     ])
   ]),
   // Searchbar
@@ -97,7 +97,12 @@ $(document.body).content([
             })
           })
         ]),
-        $('div').class('no-post').content('No Posts').hide(true).self($div => $postGrid.on('noPost', () => $div.hide(false)).on('startLoad', () => $div.hide(true))),
+        $('div').class('no-post').hide(true).self($div => {
+          $div.on('startLoad', () => $div.hide(true))
+          $postGrid
+            .on('noPost', () => $div.hide(false).content('No Posts'))
+            .on('post_error', message => $div.hide(false).content(message))
+        }),
         $postGrid
       ]
     }),

@@ -13,8 +13,8 @@ export class $Searchbar extends $Container {
         super('searchbar');
         this.build();
         window.addEventListener('keyup', (e) => {
-            if (!this.inDOM() && e.key === '/') this.activate();
-            if (this.inDOM() && e.key === 'Escape') this.inactivate(); 
+            if (!this.inDOM() && e.key === '/') this.open();
+            if (this.inDOM() && e.key === 'Escape') this.close(); 
         })
     }
 
@@ -36,10 +36,13 @@ export class $Searchbar extends $Container {
                 this.$selectionList
             ]),
             this.$filter.on('click', () => {
-                if (location.hash === '#search') $.back();
+                if (location.hash === '#search') this.close();
             })
         ])
     }
+
+    open() { $.open(location.href + '#search'); return this; }
+    close() { $.back(); return this; }
 
     activate() {
         this.hide(false);

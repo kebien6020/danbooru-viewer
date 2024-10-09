@@ -45,7 +45,7 @@ export class Post extends $EventManager<{update: []}> {
         return this;
     }
 
-    static async fetchMultiple(booru: Booru, tags?: Partial<MetaTags> | string, limit = 20) {
+    static async fetchMultiple(booru: Booru, tags?: Partial<MetaTags> | string, limit = 20, page?: string | number) {
         let tagsQuery = '';
         if (tags) {
             if (typeof tags === 'string') tagsQuery = tags;
@@ -58,7 +58,7 @@ export class Post extends $EventManager<{update: []}> {
                 }
             }
         }
-        const dataArray = await booru.fetch<PostData[]>(`/posts.json?limit=${limit}&tags=${tagsQuery}&_method=get`);
+        const dataArray = await booru.fetch<PostData[]>(`/posts.json?limit=${limit}&tags=${tagsQuery}${page ? `&page=${page}` : ''}&_method=get`);
         if (dataArray instanceof Array === false) return [];
         const list = dataArray.map(data => {
             const instance = booru.posts.get(data.id)?.update(data) ?? new this(booru, data.id, data);
@@ -100,8 +100,8 @@ export class Post extends $EventManager<{update: []}> {
     }
 
     get pathname() { return `/posts/${this.id}` }
-    get uploader() { return User.manager.get(this.uploader_id); }
-    get approver() { if (this.approver_id) return User.manager.get(this.approver_id); else return null }
+    get uploader() { return this.booru.users.get(this.uploader_id); }
+    get approver() { if (this.approver_id) return this.booru.users.get(this.approver_id); else return null }
     get isVideo() { return this.file_ext === 'mp4' || this.file_ext === 'webm' || this.file_ext === 'zip' }
     get isGif() { return this.file_ext === 'gif' }
     get isUgoria() { return this.file_ext === 'zip' }

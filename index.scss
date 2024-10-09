@@ -172,6 +172,11 @@ route#posts {
         h2 {
             margin: 0;
         }
+        div.tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
     }
 }
 
