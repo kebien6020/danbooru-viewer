@@ -21,7 +21,7 @@ export class Post extends $EventManager<{update: []}> {
     file_url$ = $.state(LOADING_STRING);
     source$ = $.state(LOADING_STRING);
     dimension$ = $.state(LOADING_STRING);
-    url$ = $.state(LOADING_STRING);
+    booruUrl$ = $.state(LOADING_STRING);
     createdDate = new Date(this.created_at);
     ready?: Promise<this>;
     webm_url$ = $.state(LOADING_STRING);
@@ -84,7 +84,7 @@ export class Post extends $EventManager<{update: []}> {
         this.file_url$.set(this.file_url);
         this.source$.set(this.source);
         this.dimension$.set(`${this.image_width}x${this.image_height}`);
-        this.url$.set(`${this.url}`);
+        this.booruUrl$.set(`${this.booruUrl}`);
         if (this.isUgoria) this.webm_url$.set(this.large_file_url);
         this.createdDate = new Date(this.created_at);
         this.fire('update');
@@ -133,7 +133,8 @@ export class Post extends $EventManager<{update: []}> {
         return [...this.booru.tags.values()].filter(tag => tag_list.includes(tag.name))
     }
     get previewURL() { return this.media_asset.variants?.find(variant => variant.file_ext === 'webp')?.url ?? this.large_file_url }
-    get url() { return `${this.booru.origin}/posts/${this.id}` }
+    get booruUrl() { return `${this.booru.origin}/posts/${this.id}` }
+    get url() { return `https://danbooru.defaultkavy.com/posts/${this.id}` }
     get isFileSource() { return this.source.startsWith('file://') }
 }
 

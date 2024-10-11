@@ -61,8 +61,7 @@ $(document.body).content([
           else Booru.set(danbooru);
         }),
       // Open Booru
-      $('ion-icon').class('open').name('open-outline').title('Open in Original Site')
-        .on('click', () => $.open(location.href.replace(location.origin, Booru.used.origin))),
+      $('a').content($('ion-icon').class('open').name('open-outline').title('Open in Original Site')).href(location.href.replace(location.origin, Booru.used.origin)).target('_blank'),
       // Menu Button
       $('ion-icon').class('menu').name('menu-outline').title('Menu').hide(false)
         .self(($icon) => { Booru.events.on('login', () => $icon.hide(true)).on('logout', () => $icon.hide(false)) })

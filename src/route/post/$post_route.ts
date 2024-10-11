@@ -80,17 +80,17 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
                     ]),
                     new $Property('file-url').name('File').content([
                         $('a').href(post.file_url$).content(post.file_url$.convert((value) => value.replace('https://', ''))).target('_blank'),
-                        $('ion-icon').name('clipboard').on('click', (e, $ion) => copyButtonHandler($ion, post.source))
+                        $('ion-icon').name('clipboard').on('click', (e, $ion) => copyButtonHandler($ion, post.file_url))
                     ]),
                     new $Property('source-url').name('Source').content([
                         $('a').href(post.source$).content(post.source$.convert((value) => value.replace('https://', ''))).target('_blank'),
                         $('ion-icon').name('clipboard').on('click', (e, $ion) => copyButtonHandler($ion, post.source))
                     ]),
                     new $Property('booru-url').name(Booru.name$).content([
-                        $('a').href(post.url$).content(post.url$.convert((value) => value.replace('https://', ''))).target('_blank'),
-                        $('ion-icon').name('clipboard').on('click', (e, $ion) => copyButtonHandler($ion, post.source))
+                        $('a').href(post.booruUrl$).content(post.booruUrl$.convert((value) => value.replace('https://', ''))).target('_blank'),
+                        $('ion-icon').name('clipboard').on('click', (e, $ion) => copyButtonHandler($ion, post.booruUrl))
                     ]),
-                    new $Property('booru-url').name('Webm').hide(true).self(async ($property) => {
+                    new $Property('webm-url').name('Webm').hide(true).self(async ($property) => {
                         await post.ready;
                         if (post.isUgoria) $property.content($('a').href(post.webm_url$).content(post.webm_url$.convert((value) => value.replace('https://', ''))).target('_blank')).hide(false);
                     }),
