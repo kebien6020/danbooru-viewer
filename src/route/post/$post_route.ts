@@ -5,17 +5,47 @@ import { ArtistCommentary } from "../../structure/Commentary";
 import { Booru } from "../../structure/Booru";
 import type { $IonIcon } from "../../component/IonIcon/$IonIcon";
 import { numberFormat } from "../../modules";
+import { ClientUser } from "../../structure/ClientUser";
 
 export const post_route = $('route').path('/posts/:id').id('post').builder(({$route, params}) => {
     if (!Number(params.id)) return $('h1').content('404: POST NOT FOUND');
     const post = Post.get(Booru.used, +params.id);
+    const $viewerPanel = 
+        $('div').class('viewer-panel').content([
+            $('div').class('panel').content([
+                $('ion-icon').name('heart-outline').self($heart => {
+                    ClientUser.events.on('favoriteUpdate', (user) => {
+                        if (user.favorites.has(post.id)) $heart.name('heart');
+                        else $heart.name('heart-outline');
+                    })
+                    if (Booru.used.user?.favorites.has(post.id)) $heart.name('heart');
+                }).on('click', () => {
+                    if (Booru.used.user?.favorites.has(post.id)) post.deleteFavorite();
+                    else post.createFavorite();
+                })
+            ]),
+            $('div').class('overlay')
+        ]).hide(true);
     return [
         $('div').class('viewer').content(async () => {
             await post.ready;
-            return post.isVideo
+            return [
+                $viewerPanel,
+                post.isVideo
                 ? $('video').height(post.image_height).width(post.image_width).src(post.file_ext === 'zip' ? post.large_file_url : post.file_url).controls(true).autoplay(true).loop(true).disablePictureInPicture(true)
                 : $('img').src(post.large_file_url)//.once('load', (e, $img) => { $img.src(post.file_url)})
-        }),
+            ]
+        })
+            .on('pointermove', (e) => {
+                if (e.pointerType === 'mouse' || e.pointerType === 'pen') $viewerPanel.hide(false);
+            })
+            .on('pointerup', (e) => {
+                console.debug(e.movementX)
+                if (e.pointerType === 'touch') $viewerPanel.hide(!$viewerPanel.hide());
+            })
+            .on('mouseleave', () => {
+                $viewerPanel.hide(true);
+            }),
         $('div').class('content').content([
             $('h3').content(`Artist's Commentary`),
             $('section').class('commentary').content(async ($comentary) => {
@@ -45,7 +75,7 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
                     new $Property('size').name('Size').content([post.file_size$, post.dimension$]),
                     new $Property('file-type').name('File Type').content(post.file_ext$),
                     $('div').class('inline').content([
-                        new $Property('favorites').name('Favorites').content(post.favorites$),
+                        new $Property('favorites').name('Favorites').content(post.favcount$),
                         new $Property('score').name('Score').content(post.score$)
                     ]),
                     new $Property('file-url').name('File').content([

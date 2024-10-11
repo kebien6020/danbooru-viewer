@@ -8,6 +8,7 @@ export class User {
     level$ = $.state(10);
     level_string$ = $.state('...');
     booru: Booru;
+    favorites = new Set<id>();
     constructor(booru: Booru, data: UserData, update$: boolean = true) {
         this.booru = booru;
         Object.assign(this, data);

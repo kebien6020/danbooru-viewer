@@ -14,4 +14,9 @@ export class $IonIcon extends $Container {
         this.attribute('size', size);
         return this;
     }
+    
+    link(url: string, replace = false) {
+        this.on('click', () => replace ? $.replace(url) : $.open(url));
+        return this;
+    }
 }

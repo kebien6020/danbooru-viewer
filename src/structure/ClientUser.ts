@@ -1,11 +1,15 @@
+import { $EventManager } from "elexis";
 import type { Booru } from "./Booru";
+import { Favorite, type FavoriteData } from "./Favorite";
 import { User, type UserData } from "./User";
+import type { Post } from "./Post";
 
 export interface ClientUser extends ClientUserData {}
 export class ClientUser extends User {
     apiKey: string;
     favorite_count$ = $.state(0);
     forum_post_count$ = $.state(0);
+    static events = new $EventManager<ClientUserEventMap>()
     constructor(booru: Booru, apiKey: string, data: ClientUserData) {
         super(booru, data, false);
         this.apiKey = apiKey;
@@ -16,6 +20,19 @@ export class ClientUser extends User {
         super.update$();
         this.forum_post_count$?.set(this.forum_post_count);
         this.favorite_count$?.set(this.favorite_count);
+    }
+
+    async init() {
+        await this.fetchFavorites();
+        
+    }
+
+    async fetchFavorites() {
+        const oldestId = Array.from(this.favorites.keys()).at(-1);
+        const list = await Favorite.fetchUserFavorites(this.booru, this, ``, 1000, oldestId ? `b${oldestId}` : 1);
+        ClientUser.events.fire('favoriteUpdate', this);
+        if (list.length >= 1000) this.fetchFavorites();
+        return list;
     }
 
     static get storageUserData() { const data = localStorage.getItem('user_data'); return data ? JSON.parse(data) as ClientUserStoreData : null }
@@ -68,4 +85,8 @@ export interface ClientUserData extends UserData {
 export interface ClientUserStoreData {
     username: string;
     apiKey: string;
+}
+
+export interface ClientUserEventMap {
+    favoriteUpdate: [user: ClientUser]
 }

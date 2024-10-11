@@ -3,6 +3,7 @@ import type { Post } from "./Post";
 import type { Tag } from "./Tag";
 import { ClientUser, type ClientUserData } from "./ClientUser";
 import type { User } from "./User";
+import type { Favorite } from "./Favorite";
 
 export interface BooruOptions {
     origin: string;
@@ -18,6 +19,7 @@ export class Booru {
     posts = new Map<id, Post>();
     tags = new Map<id, Tag>();
     users = new Map<id, User>();
+    favorites = new Map<id, Favorite>();
     constructor(options: BooruOptions) {
         Object.assign(this, options);
         if (this.origin.endsWith('/')) this.origin = this.origin.slice(0, -1);
@@ -37,16 +39,20 @@ export class Booru {
     static get storageAPI() { return localStorage.getItem('booru_api'); }
     static set storageAPI(name: string | null) { if (name) localStorage.setItem('booru_api', name); else localStorage.removeItem('booru_api') }
 
-    async fetch<T>(endpoint: string) {
+    async fetch<T>(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET') {
         const auth = this.user ? `${endpoint.includes('?') ? '&' : '?'}login=${this.user.name}&api_key=${this.user.apiKey}` : '';
-        const data = await fetch(`${this.origin}${endpoint}${auth}`).then(res => res.json()) as any;
+        const data = await fetch(`${this.origin}${endpoint}${auth}`, {
+            method: method,
+        }).then(res => res.json()) as any;
         if (data.success === false) throw data.message;
         return data as T;
     }
 
+
     async login(username: string, apiKey: string) {
         const data = await this.fetch<ClientUserData>(`/profile.json?login=${username}&api_key=${apiKey}`);
         this.user = new ClientUser(this, apiKey, data);
+        this.user.init();
         Booru.events.fire('login', this.user);
         return this.user;
     }

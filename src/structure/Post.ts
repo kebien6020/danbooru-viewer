@@ -3,6 +3,8 @@ import { Booru } from "./Booru";
 import { Tag } from "./Tag";
 import { User } from "./User";
 import { dateFrom, digitalUnit } from "./Util";
+import { ClientUser } from "./ClientUser";
+import type { FavoriteData } from "./Favorite";
 
 const LOADING_STRING = '...'
 
@@ -12,7 +14,7 @@ export class Post extends $EventManager<{update: []}> {
     uploader$ = $.state(LOADING_STRING);
     approver$ = $.state(LOADING_STRING);
     created_date$ = $.state(LOADING_STRING);
-    favorites$ = $.state(0);
+    favcount$ = $.state(0);
     score$ = $.state(0);
     file_size$ = $.state(LOADING_STRING);
     file_ext$ = $.state(LOADING_STRING);
@@ -75,7 +77,7 @@ export class Post extends $EventManager<{update: []}> {
         this.uploader$.set(this.uploader?.name$ ?? this.uploader_id?.toString());
         this.approver$.set(this.approver?.name$ ?? this.approver_id?.toString() ?? 'None');
         this.created_date$.set(dateFrom(+new Date(this.created_at)));
-        this.favorites$.set(this.fav_count);
+        this.favcount$.set(this.fav_count);
         this.score$.set(this.score);
         this.file_size$.set(digitalUnit(this.file_size));
         this.file_ext$.set(this.file_ext as any);
@@ -97,6 +99,26 @@ export class Post extends $EventManager<{update: []}> {
     async fetchTags() {
         await this.ready;
         return await Tag.fetchMultiple(this.booru, {name: {_space: this.tag_string}});
+    }
+
+    async createFavorite() {
+        if (!this.booru.user) return;
+        const data = await this.booru.fetch<Post>(`/favorites.json?post_id=${this.id}`, 'POST')
+        this.update(data);
+        this.booru.user.favorites.add(data.id);
+        ClientUser.events.fire('favoriteUpdate', this.booru.user);
+        return data.id;
+    }
+
+    async deleteFavorite() {
+        if (!this.booru.user) return;
+        const data = await fetch(`/api/favorites/${this.id}?login=${this.booru.user.name}&api_key=${this.booru.user.apiKey}&origin=${this.booru.origin}`, {method: 'DELETE'}).then(res => res.json()) as boolean;
+        if (data === false) return;
+        this.fav_count--;
+        this.favcount$.set(this.fav_count);
+        this.booru.user.favorites.delete(this.id);
+        ClientUser.events.fire('favoriteUpdate', this.booru.user);
+        return;
     }
 
     get pathname() { return `/posts/${this.id}` }
