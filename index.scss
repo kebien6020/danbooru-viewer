@@ -3,6 +3,7 @@
 @import '/src/component/PostTile/$PostTile';
 @import '/src/component/Searchbar/$Searchbar';
 @import '/src/component/IconButton/$IconButton';
+@import '/src/component/IonIcon/$IonIcon';
 @import '/src/component/Drawer/$Drawer';
 // routes
 @import '/src/route/post/$post_route';
@@ -197,16 +198,6 @@ button {
     &:hover {
         background-color: var(--secondary-color-6);
         color: var(--primary-color);
-    }
-}
-
-ion-icon {
-    font-size: 24px;
-    color: var(--primary-color);
-    cursor: pointer;
-    
-    &:hover {
-        color: var(--secondary-color-9);
     }
 }
 

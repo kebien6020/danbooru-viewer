@@ -54,14 +54,17 @@ $(document.body).content([
       $('ion-icon').class('search').name('search-outline').title('Search')
         .self($self => $Router.events.on('stateChange', ({beforeURL, afterURL}) => {if (beforeURL.hash === '#search') $self.hide(false); if (afterURL.hash === '#search') $self.hide(true)}))
         .on('click', () => $searchbar.open()),
-      // Switch Booru
-      $('ion-icon').class('switch').name('swap-horizontal').title('Switch Booru')
-        .on('click', () => {
-          if (Booru.used === danbooru) Booru.set(safebooru);
-          else Booru.set(danbooru);
-        }),
       // Open Booru
       $('a').content($('ion-icon').class('open').name('open-outline').title('Open in Original Site')).href(location.href.replace(location.origin, Booru.used.origin)).target('_blank'),
+      // Copy Button
+      $('ion-icon').class('copy').name('link-outline').title('Copy Page Link').hide(false)
+        .on('click', (e, $copy) => {
+          navigator.clipboard.writeText(`${location.origin}${location.pathname}${location.search}`)
+          $copy.name('checkmark-outline');
+          setTimeout(() => {
+            $copy.name('link-outline')
+          }, 2000);
+        }),
       // Menu Button
       $('ion-icon').class('menu').name('menu-outline').title('Menu').hide(false)
         .self(($icon) => { Booru.events.on('login', () => $icon.hide(true)).on('logout', () => $icon.hide(false)) })

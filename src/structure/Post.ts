@@ -136,6 +136,7 @@ export class Post extends $EventManager<{update: []}> {
     get booruUrl() { return `${this.booru.origin}/posts/${this.id}` }
     get url() { return `https://danbooru.defaultkavy.com/posts/${this.id}` }
     get isFileSource() { return this.source.startsWith('file://') }
+    get isLargeFile() { return this.file_size > 5_000_000 } // || this.image_height > innerHeight || this.image_width > innerWidth
 }
 
 export interface PostData extends PostOptions {

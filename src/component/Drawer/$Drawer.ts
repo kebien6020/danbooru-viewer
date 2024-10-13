@@ -1,6 +1,7 @@
 import { $Container } from "elexis";
 import { Booru } from "../../structure/Booru";
 import { numberFormat } from "../../modules";
+import { danbooru, safebooru } from "../../main";
 
 export class $Drawer extends $Container {
     $filter = $('div').class('filter');
@@ -37,12 +38,16 @@ export class $Drawer extends $Container {
                         })
                 ]),
                 $('div').class('nav').content([
-                    $('div').class('login')
-                        .content([ $('icon-button').icon('log-in-outline').content('Login').link('/login', true) ])
+                    $('icon-button').icon('log-in-outline').content('Login').link('/login', true)
                         .self(($div => Booru.events.on('login', () => $div.hide(true)).on('logout', () => $div.hide(false)))),
-                    $('div').class('logout').hide(true)
-                        .content([ $('icon-button').icon('log-in-outline').content('Logout').on('dblclick', () => Booru.used.logout()) ])
+                    $('icon-button').icon('log-in-outline').content('Logout').on('dblclick', () => Booru.used.logout()).hide(true)
                         .self(($div => Booru.events.on('login', () => $div.hide(false)).on('logout', () => $div.hide(true)))),
+                    
+                    $('icon-button').icon('swap-horizontal').content('Logout').class('switch').content('Switch Booru')
+                        .on('click', () => {
+                            if (Booru.used === danbooru) Booru.set(safebooru);
+                            else Booru.set(danbooru);
+                        }),
                 ])
             ]),
             this.$filter.on('click', () => $.back())
