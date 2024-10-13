@@ -41,8 +41,8 @@ export class $Searchbar extends $Container {
         ])
     }
 
-    open() { $.open(location.href + '#search'); return this; }
-    close() { $.back(); return this; }
+    open() { if (location.hash !== '#search') $.open(location.href + '#search'); return this; }
+    close() { if (location.hash === '#search') $.back(); return this; }
 
     activate() {
         this.hide(false);

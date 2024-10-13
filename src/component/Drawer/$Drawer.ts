@@ -49,7 +49,10 @@ export class $Drawer extends $Container {
         ])
     }
 
-    open() {
+    open() { if (location.hash !== '#drawer') $.open(location.href + '#drawer'); return this; }
+    close() { if (location.hash === '#drawer') $.back(); return this; }
+
+    private activate() {
         this.hide(false);
         this.$container.animate({
             transform: [`translateX(100%)`, `translateX(0%)`]
@@ -67,7 +70,7 @@ export class $Drawer extends $Container {
         })
     }
 
-    close() {
+    private inactivate() {
         this.$container.animate({
             transform: [`translateX(0%)`, `translateX(100%)`]
         }, {
