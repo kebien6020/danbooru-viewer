@@ -88,7 +88,7 @@ export class $Drawer extends $Container {
     }
 
     checkURL(beforeURL: URL | undefined, afterURL: URL) {
-        if (beforeURL?.hash === '#drawer') this.close();
-        if (afterURL.hash === '#drawer') this.open();
+        if (beforeURL?.hash === '#drawer') this.inactivate();
+        if (afterURL.hash === '#drawer') this.activate();
     }
 }
