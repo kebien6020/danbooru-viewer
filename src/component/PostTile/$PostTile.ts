@@ -16,10 +16,8 @@ export class $PostTile extends $Container {
 
     build() {
         let timer: Timer
-        this.$video?.on('playing', (e, $video) => {
-            timer = setInterval(() => {
-                this.durationUpdate();
-            }, 500)
+        this.$video?.on('timeupdate', (e, $video) => {
+            this.durationUpdate();
         })
         this.$video?.on('pause', () => {
             clearInterval(timer);

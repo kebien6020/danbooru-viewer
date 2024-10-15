@@ -6,6 +6,9 @@ export default defineConfig({
                 target: 'http://localhost:3030',
                 changeOrigin: true
             },
+        },
+        watch: {
+          usePolling: true
         }
     },
     define: {

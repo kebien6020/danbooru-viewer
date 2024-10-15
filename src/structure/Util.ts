@@ -48,3 +48,8 @@ export function digitalUnit(bytes: number) {
     const eb = bytes / (1000 * 6);
     return `${eb.toFixed(2)}EB`;
 }
+
+const NUMBER_FORMAT = new Intl.NumberFormat('en', {notation: 'compact'})
+export function numberFormat(number: number) {
+    return NUMBER_FORMAT.format(number)
+}

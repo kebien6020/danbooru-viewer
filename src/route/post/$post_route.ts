@@ -4,8 +4,9 @@ import { Tag, TagCategory } from "../../structure/Tag";
 import { ArtistCommentary } from "../../structure/Commentary";
 import { Booru } from "../../structure/Booru";
 import type { $IonIcon } from "../../component/IonIcon/$IonIcon";
-import { numberFormat } from "../../modules";
+import { numberFormat } from "../../structure/Util";
 import { ClientUser } from "../../structure/ClientUser";
+import { $VideoController } from "../../component/VideoController/$VideoController";
 
 export const post_route = $('route').path('/posts/:id').id('post').builder(({$route, params}) => {
     if (!Number(params.id)) return $('h1').content('404: POST NOT FOUND');
@@ -17,26 +18,30 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
         original_size: []
     }>();
     return [
-        $('div').class('viewer').content(async () => {
+        $('div').class('viewer').content(async ($viewer) => {
+            const $video = $('video');
             await post.ready;
             return [
-                $('div').class('viewer-panel').hide(true).content([
+                $('div').class('viewer-panel').hide(false).content([
                     $('div').class('panel').content([
-                        $('ion-icon').title('Favorite').name('heart-outline').self($heart => {
-                            ClientUser.events.on('favoriteUpdate', (user) => {
-                                if (user.favorites.has(post.id)) $heart.name('heart');
-                                else $heart.name('heart-outline');
+                        post.isVideo ? new $VideoController($video, $viewer, post) : null,
+                        $('div').class('buttons').content([
+                            $('ion-icon').title('Favorite').name('heart-outline').self($heart => {
+                                ClientUser.events.on('favoriteUpdate', (user) => {
+                                    if (user.favorites.has(post.id)) $heart.name('heart');
+                                    else $heart.name('heart-outline');
+                                })
+                                if (Booru.used.user?.favorites.has(post.id)) $heart.name('heart');
+                                $heart.on('click', () => {
+                                    if (Booru.used.user?.favorites.has(post.id)) post.deleteFavorite();
+                                    else post.createFavorite();
+                                })
+                            }),
+                            $('ion-icon').title('Original Size').name('resize-outline').self($original => {
+                                $original.on('click', () => { events.fire('original_size'); $original.disable(true); })
+                                if (!post.isLargeFile || post.isVideo) $original.disable(true);
                             })
-                            if (Booru.used.user?.favorites.has(post.id)) $heart.name('heart');
-                            $heart.on('click', () => {
-                                if (Booru.used.user?.favorites.has(post.id)) post.deleteFavorite();
-                                else post.createFavorite();
-                            })
-                        }),
-                        $('ion-icon').title('Original Size').name('resize-outline').self($original => {
-                            $original.on('click', () => { events.fire('original_size'); $original.disable(true); })
-                            if (!post.isLargeFile || post.isVideo) $original.disable(true);
-                        })
+                        ])
                     ]),
                     $('div').class('overlay')
                 ]).self($viewerPanel => {
@@ -45,7 +50,7 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
                         .on('viewerPanel_switch', () => $viewerPanel.hide(!$viewerPanel.hide()))
                 }),
                 post.isVideo
-                ? $('video').height(post.image_height).width(post.image_width).src(post.file_ext === 'zip' ? post.large_file_url : post.file_url).controls(true).autoplay(true).loop(true).disablePictureInPicture(true)
+                ? $video.height(post.image_height).width(post.image_width).src(post.file_ext === 'zip' ? post.large_file_url : post.file_url).controls(false).autoplay(true).loop(true).disablePictureInPicture(true)
                 : $('img').src(post.isLargeFile ? post.large_file_url : post.file_url).self($img => {
                     events.on('original_size', () => $img.src(post.file_url))
                 })
@@ -56,7 +61,7 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
                     if (e.pointerType === 'mouse' || e.pointerType === 'pen') events.fire('viewerPanel_show');
                 })
                 .on('pointerup', (e) => {
-                    if (e.pointerType === 'touch') events.fire('viewerPanel_hide');
+                    if (e.pointerType === 'touch') events.fire('viewerPanel_switch');
                 })
                 .on('mouseleave', () => {
                     events.fire('viewerPanel_hide');

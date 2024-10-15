@@ -1,11 +1,13 @@
 import { $Container } from "elexis";
 import { Booru } from "../../structure/Booru";
-import { numberFormat } from "../../modules";
+import { numberFormat } from "../../structure/Util";
 import { danbooru, safebooru } from "../../main";
 
 export class $Drawer extends $Container {
     $filter = $('div').class('filter');
     $container = $('div').class('drawer-container')
+    pointers = $.pointers($(document.body));
+    protected opened = false;
     constructor() {
         super('drawer');
         this.hide(true);
@@ -52,12 +54,22 @@ export class $Drawer extends $Container {
             ]),
             this.$filter.on('click', () => $.back())
         ])
+
+        this.pointers.on('move', pointer => {
+            if ($(':.viewer')?.contains(pointer.$target)) return;
+            pointer.$target.parent
+            if (pointer.type !== 'pen' && pointer.type !== 'touch') return;
+            if (pointer.move_y > 4 || pointer.move_y < -4) return;
+            if (pointer.move_x <= -7) { pointer.delete(); this.open(); }
+            if (pointer.move_x >= 7) { pointer.delete(); this.close(); }
+        })
     }
 
     open() { if (location.hash !== '#drawer') $.open(location.href + '#drawer'); return this; }
     close() { if (location.hash === '#drawer') $.back(); return this; }
 
     private activate() {
+        this.opened = true;
         this.hide(false);
         this.$container.animate({
             transform: [`translateX(100%)`, `translateX(0%)`]
@@ -76,13 +88,14 @@ export class $Drawer extends $Container {
     }
 
     private inactivate() {
+        this.opened = false
         this.$container.animate({
             transform: [`translateX(0%)`, `translateX(100%)`]
         }, {
             fill: 'both',
             duration: 300,
             easing: 'ease'
-        }, () => this.hide(true))
+        }, () => this.hide(!this.opened))
         this.$filter.animate({
             opacity: [1, 0]
         }, {

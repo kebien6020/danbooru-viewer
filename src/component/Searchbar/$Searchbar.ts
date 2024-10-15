@@ -2,7 +2,7 @@ import { $Container } from "elexis";
 import { Tag, TagCategory } from "../../structure/Tag";
 import { Booru } from "../../structure/Booru";
 import { Autocomplete } from "../../structure/Autocomplete";
-import { numberFormat } from "../../modules";
+import { numberFormat } from "../../structure/Util";
 
 export class $Searchbar extends $Container {
     $tagInput = new $TagInput(this);
