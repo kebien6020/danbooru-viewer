@@ -15,57 +15,62 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
         viewerPanel_hide: [],
         viewerPanel_show: [],
         viewerPanel_switch: [],
-        original_size: []
+        original_size: [],
+        video_play_pause: []
     }>();
     return [
         $('div').class('viewer').content(async ($viewer) => {
             const $video = $('video');
+            events.on('video_play_pause', () => { if ($video.isPlaying) $video.pause(); else $video.play() })
             await post.ready;
+            $viewer
+                .on('pointermove', (e) => {
+                    if (e.pointerType === 'mouse' || e.pointerType === 'pen') events.fire('viewerPanel_show');
+                })
+                .on('pointerup', (e) => {
+                    if ( $(':.viewer-panel .panel')?.contains($(e.target)) ) return;
+                    if (e.pointerType === 'touch') events.fire('viewerPanel_switch');
+                    if (e.pointerType === 'mouse') events.fire('video_play_pause');
+                })
+                .on('mouseleave', () => {
+                    events.fire('viewerPanel_hide');
+                })
             return [
-                $('div').class('viewer-panel').hide(false).content([
-                    $('div').class('panel').content([
-                        post.isVideo ? new $VideoController($video, $viewer, post) : null,
-                        $('div').class('buttons').content([
-                            $('ion-icon').title('Favorite').name('heart-outline').self($heart => {
-                                ClientUser.events.on('favoriteUpdate', (user) => {
-                                    if (user.favorites.has(post.id)) $heart.name('heart');
-                                    else $heart.name('heart-outline');
+                $('div').class('viewer-panel').hide(false)
+                    .content([
+                        $('div').class('panel').content([
+                            post.isVideo ? new $VideoController($video, $viewer, post) : null,
+                            $('div').class('buttons').content([
+                                $('ion-icon').title('Favorite').name('heart-outline').self($heart => {
+                                    ClientUser.events.on('favoriteUpdate', (user) => {
+                                        if (user.favorites.has(post.id)) $heart.name('heart');
+                                        else $heart.name('heart-outline');
+                                    })
+                                    if (Booru.used.user?.favorites.has(post.id)) $heart.name('heart');
+                                    $heart.on('click', () => {
+                                        if (Booru.used.user?.favorites.has(post.id)) post.deleteFavorite();
+                                        else post.createFavorite();
+                                    })
+                                }),
+                                $('ion-icon').title('Original Size').name('resize-outline').self($original => {
+                                    $original.on('click', () => { events.fire('original_size'); $original.disable(true); })
+                                    if (!post.isLargeFile || post.isVideo) $original.disable(true);
                                 })
-                                if (Booru.used.user?.favorites.has(post.id)) $heart.name('heart');
-                                $heart.on('click', () => {
-                                    if (Booru.used.user?.favorites.has(post.id)) post.deleteFavorite();
-                                    else post.createFavorite();
-                                })
-                            }),
-                            $('ion-icon').title('Original Size').name('resize-outline').self($original => {
-                                $original.on('click', () => { events.fire('original_size'); $original.disable(true); })
-                                if (!post.isLargeFile || post.isVideo) $original.disable(true);
-                            })
-                        ])
-                    ]),
-                    $('div').class('overlay')
-                ]).self($viewerPanel => {
-                    events.on('viewerPanel_hide', () => $viewerPanel.hide(true))
-                        .on('viewerPanel_show', () => $viewerPanel.hide(false))
-                        .on('viewerPanel_switch', () => $viewerPanel.hide(!$viewerPanel.hide()))
-                }),
+                            ])
+                        ]),
+                        $('div').class('overlay')
+                    ])
+                    .self($viewerPanel => {
+                        events.on('viewerPanel_hide', () => $viewerPanel.hide(true))
+                            .on('viewerPanel_show', () => $viewerPanel.hide(false))
+                            .on('viewerPanel_switch', () => $viewerPanel.hide(!$viewerPanel.hide()))
+                    }),
                 post.isVideo
                 ? $video.height(post.image_height).width(post.image_width).src(post.file_ext === 'zip' ? post.large_file_url : post.file_url).controls(false).autoplay(true).loop(true).disablePictureInPicture(true)
                 : $('img').src(post.isLargeFile ? post.large_file_url : post.file_url).self($img => {
                     events.on('original_size', () => $img.src(post.file_url))
                 })
             ]
-        }).self($div => {
-            $div
-                .on('pointermove', (e) => {
-                    if (e.pointerType === 'mouse' || e.pointerType === 'pen') events.fire('viewerPanel_show');
-                })
-                .on('pointerup', (e) => {
-                    if (e.pointerType === 'touch') events.fire('viewerPanel_switch');
-                })
-                .on('mouseleave', () => {
-                    events.fire('viewerPanel_hide');
-                })
         }),
         $('div').class('content').content([
             $('h3').content(`Artist's Commentary`),
