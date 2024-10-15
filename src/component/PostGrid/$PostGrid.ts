@@ -2,7 +2,6 @@ import { $Layout, type $LayoutEventMap } from "@elexis/layout";
 import { Booru } from "../../structure/Booru";
 import { Post } from "../../structure/Post";
 import { $PostTile } from "../PostTile/$PostTile";
-import { User } from "../../structure/User";
 
 interface $PostGridOptions {
     tags?: string
@@ -72,6 +71,7 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
     removeAll() {
         this.posts.clear();
         this.$posts.clear();
+        this.orderMap.clear();
         this.animate({opacity: [1, 0]}, {duration: 300, easing: 'ease'}, () => this.clear().render())
         return this;
     }
