@@ -1,3 +1,12 @@
 layout.post-grid {
     margin-top: 0.4rem;
+
+    &:has(post-tile[focus]) {
+        post-tile:not([focus]) {
+            opacity: 0.5;
+        }
+        post-tile:hover {
+            opacity: 1;
+        }
+    }
 }

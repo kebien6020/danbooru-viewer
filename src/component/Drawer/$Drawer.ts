@@ -45,10 +45,11 @@ export class $Drawer extends $Container {
                     $('icon-button').icon('log-in-outline').content('Logout').on('dblclick', () => Booru.used.logout()).hide(true)
                         .self(($div => Booru.events.on('login', () => $div.hide(false)).on('logout', () => $div.hide(true)))),
                     
-                    $('icon-button').icon('swap-horizontal').content('Logout').class('switch').content('Switch Booru')
+                    $('icon-button').icon('swap-horizontal').class('switch').content('Switch Booru')
                         .on('click', () => {
                             if (Booru.used === danbooru) Booru.set(safebooru);
                             else Booru.set(danbooru);
+                            this.close();
                         }),
                 ])
             ]),

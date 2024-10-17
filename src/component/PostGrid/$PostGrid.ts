@@ -2,6 +2,7 @@ import { $Layout, type $LayoutEventMap } from "@elexis/layout";
 import { Booru } from "../../structure/Booru";
 import { Post } from "../../structure/Post";
 import { $PostTile } from "../PostTile/$PostTile";
+import { $Input } from "elexis/lib/node/$Input";
 
 interface $PostGridOptions {
     tags?: string
@@ -13,6 +14,7 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
     tags?: string;
     finished = false;
     limit = 100;
+    $focus = $.focus();
     constructor(options?: $PostGridOptions) {
         super();
         this.tags = options?.tags;
@@ -34,6 +36,29 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
         this.on('resize', () => this.resize())
         this.events.fire('startLoad');
         this.loader();
+        this.$focus.layer(100).loop(false).scrollThreshold($.rem(2) + 60);
+
+        $.keys($(window))
+            .if(e => {
+                if ($(e.target) instanceof $Input) return; 
+                if (!this.inDOM()) return;
+                return true;
+            })
+            .keydown('Tab', e => {
+                e.preventDefault();
+                if (e.shiftKey) this.$focus.prev();
+                else this.$focus.next();
+            })
+            .keydown(['w', 'W'], e => { e.preventDefault(); this.$focus.up(); })
+            .keydown(['s', 'S'], e => { e.preventDefault(); this.$focus.down(); })
+            .keydown(['d', 'D'], e => { e.preventDefault(); this.$focus.right(); })
+            .keydown(['a', 'A'], e => { e.preventDefault(); this.$focus.left(); })
+            .keydown([' ', 'Enter'], e => {
+                e.preventDefault();
+                const focused = this.$focus.currentLayer?.currentFocus;
+                if (focused instanceof $PostTile) $.open(`/posts/${focused.post.id}`);
+            })
+            .keydown(['Escape'], e => { e.preventDefault(); this.$focus.blur(); })
     }
 
     protected async loader() {
@@ -63,7 +88,8 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
             this.$posts.set(post, $post);
             this.posts.add(post);
         }
-        const $posts = [...this.orderMap.values()].map(post => this.$posts.get(post));
+        this.$focus.layer(100).removeAll();
+        const $posts = [...this.orderMap.values()].map(post => this.$posts.get(post)?.self(this.$focus.layer(100).add));
         this.content($posts).render();
         return this;
     }

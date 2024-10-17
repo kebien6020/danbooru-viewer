@@ -1,7 +1,7 @@
 import 'elexis';
 import '@elexis/layout';
 import '@elexis/router';
-import { Booru, type BooruOptions } from './structure/Booru';
+import { Booru } from './structure/Booru';
 import { post_route } from './route/post/$post_route';
 import { $PostGrid } from './component/PostGrid/$PostGrid';
 import { $Router, $RouterNavigationDirection } from '@elexis/router';
@@ -10,6 +10,7 @@ import { $IonIcon } from './component/IonIcon/$IonIcon';
 import { $IconButton } from './component/IconButton/$IconButton';
 import { $login_route } from './route/login/$login_route';
 import { $Drawer } from './component/Drawer/$Drawer';
+import { $Input } from 'elexis/lib/node/$Input';
 // declare elexis module
 declare module 'elexis' {
   export namespace $ {
@@ -117,6 +118,7 @@ $(document.body).content([
     const TX = 2;
     e.preventDefault();
     function intro() {
+      $(document.documentElement).css({scrollBehavior: 'auto'});
       const transform = $.call(() => {
         switch ($Router.navigationDirection) {
           case $RouterNavigationDirection.Forward: return [`translateX(${TX}%)`, `translateX(0%)`];
@@ -134,10 +136,12 @@ $(document.body).content([
         easing: 'ease'
       }, () => {
         e.switched();
+        $(document.documentElement).css({scrollBehavior: ''});
         e.nextContent.element?.removeClass('animated')
       })
     }
     function outro() {
+      $(document.documentElement).css({scrollBehavior: 'auto'});
       const transform = $.call(() => {
         switch ($Router.navigationDirection) {
           case $RouterNavigationDirection.Forward: return [`translateX(0%)`, `translateX(-${TX}%)`];
@@ -169,3 +173,10 @@ componentState(undefined, new URL(location.href))
 function componentState(beforeURL: URL | undefined, afterURL: URL) {
   $searchbar.checkURL(beforeURL, afterURL); $drawer.checkURL(beforeURL, afterURL)
 }
+$.keys($(window))
+  .if(e => {
+    if ($(e.target) instanceof $Input) return; 
+    return true;
+  })
+  .keydown(['q', 'Q'], e => { e.preventDefault(); if ($Router.index !== 0) $.back(); })
+  .keydown(['e', 'E'], e => { e.preventDefault(); if ($Router.forwardIndex !== 0) $.forward(); })

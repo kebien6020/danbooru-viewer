@@ -7,6 +7,7 @@ import type { $IonIcon } from "../../component/IonIcon/$IonIcon";
 import { numberFormat } from "../../structure/Util";
 import { ClientUser } from "../../structure/ClientUser";
 import { $VideoController } from "../../component/VideoController/$VideoController";
+import { $Input } from "elexis/lib/node/$Input";
 
 export const post_route = $('route').path('/posts/:id').id('post').builder(({$route, params}) => {
     if (!Number(params.id)) return $('h1').content('404: POST NOT FOUND');
@@ -18,6 +19,16 @@ export const post_route = $('route').path('/posts/:id').id('post').builder(({$ro
         original_size: [],
         video_play_pause: []
     }>();
+    $.keys($(window))
+        .if(e => {
+            if ($(e.target) instanceof $Input) return;
+            if (!$route.inDOM()) return;
+            return true;
+        })
+        .keydown(['f', 'F'], e => {
+            if (Booru.used.user?.favorites.has(post.id)) post.deleteFavorite();
+            else post.createFavorite();
+        })
     return [
         $('div').class('viewer').content(async ($viewer) => {
             const $video = $('video');

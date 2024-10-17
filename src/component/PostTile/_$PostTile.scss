@@ -7,7 +7,12 @@ post-tile {
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-
+    outline: transparent solid 2px;
+    
+    &[focus] {
+        outline: var(--secondary-color-9) solid 2px;
+        transform: scale(1.02);
+    }
     @media (hover: hover) {
         &:hover {
             transform: scale(1.02);
