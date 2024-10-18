@@ -1,12 +1,19 @@
 layout.post-grid {
-    margin-top: 0.4rem;
+    margin-block: 1rem;
 
+    a {
+        transition: 0.3s all ease;
+    }
     &:has(post-tile[focus]) {
         post-tile:not([focus]) {
-            opacity: 0.5;
+            a {
+                opacity: 0.5;
+            }
         }
         post-tile:hover {
-            opacity: 1;
+            a {
+                opacity: 1;
+            }
         }
     }
 }

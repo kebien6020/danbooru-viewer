@@ -4,25 +4,29 @@ import '@elexis/router';
 import { Booru } from './structure/Booru';
 import { post_route } from './route/post/$post_route';
 import { $PostGrid } from './component/PostGrid/$PostGrid';
-import { $Router, $RouterNavigationDirection } from '@elexis/router';
+import { $Route, $Router, $RouterAnchor, $RouterNavigationDirection } from '@elexis/router';
 import { $Searchbar } from './component/Searchbar/$Searchbar';
 import { $IonIcon } from './component/IonIcon/$IonIcon';
 import { $IconButton } from './component/IconButton/$IconButton';
 import { $login_route } from './route/login/$login_route';
 import { $Drawer } from './component/Drawer/$Drawer';
 import { $Input } from 'elexis/lib/node/$Input';
+import { $DetailPanel } from './component/DetailPanel/$DetailPanel';
+import { $PostTile } from './component/PostTile/$PostTile';
+import { LocalSettings } from './structure/LocalSettings';
 // declare elexis module
 declare module 'elexis' {
   export namespace $ {
       export interface TagNameElementMap {
         'ion-icon': typeof $IonIcon;
         'icon-button': typeof $IconButton;
+        'a': typeof $RouterAnchor;
       } 
   }
 }
 $.registerTagName('ion-icon', $IonIcon)
 $.registerTagName('icon-button', $IconButton)
-$.anchorHandler = ($a) => { $.open($a.href(), $a.target())}
+$.registerTagName('a', $RouterAnchor)
 // settings
 export const [danbooru, safebooru]: Booru[] = [
   new Booru({ origin: 'https://danbooru.donmai.us', name: 'Danbooru' }),
@@ -32,6 +36,7 @@ export const [danbooru, safebooru]: Booru[] = [
 Booru.set(Booru.manager.get(Booru.storageAPI ?? '') ?? danbooru);
 const $searchbar = new $Searchbar().hide(true);
 const $drawer = new $Drawer();
+export const detailPanelEnable$ = $.state(LocalSettings.detailPanelEnabled ?? false).on('update', ({state$}) => LocalSettings.detailPanelEnabled = state$.value)
 
 // render
 $(document.body).content([
@@ -55,6 +60,8 @@ $(document.body).content([
       $('ion-icon').class('search').name('search-outline').title('Search')
         .self($self => $Router.events.on('stateChange', ({beforeURL, afterURL}) => {if (beforeURL.hash === '#search') $self.hide(false); if (afterURL.hash === '#search') $self.hide(true)}))
         .on('click', () => $searchbar.open()),
+      // Detail Panel Button
+      $('ion-icon').class('detail-panel').name('reader-outline').title('Toggle Detail Panel').on('click', () => detailPanelEnable$.set(!detailPanelEnable$.value)),
       // Open Booru
       $('a').content($('ion-icon').class('open').name('open-outline').title('Open in Original Site')).href(location.href.replace(location.origin, Booru.used.origin)).target('_blank'),
       // Copy Button
@@ -87,10 +94,13 @@ $(document.body).content([
   // Base Router
   $('router').base('/').map([
     // Home Page
-    $('route').id('posts').path(['/', '/posts']).builder(() => new $PostGrid()),
+    $('route').id('posts').path(['/', '/posts']).builder(({$route, query}) => {
+      const { $postGrid, $detail } = $postsPageComponents($route, query);
+      return [ $postGrid, $detail ]
+    }),
     // Posts Page
-    $('route').id('posts').path('/posts?tags').builder(({query}) => {
-      const $postGrid = new $PostGrid({tags: query.tags});
+    $('route').id('posts').path('/posts?tags').builder(({$route, query}) => {
+      const { $postGrid, $detail } = $postsPageComponents($route, query)
       return [
         $('header').content([
           $('h2').content('Posts'),
@@ -106,7 +116,8 @@ $(document.body).content([
             .on('noPost', () => $div.hide(false).content('No Posts'))
             .on('post_error', message => $div.hide(false).content(message))
         }),
-        $postGrid
+        $postGrid,
+        $detail
       ]
     }),
     // Post Page
@@ -173,6 +184,19 @@ componentState(undefined, new URL(location.href))
 function componentState(beforeURL: URL | undefined, afterURL: URL) {
   $searchbar.checkURL(beforeURL, afterURL); $drawer.checkURL(beforeURL, afterURL)
 }
+
+function $postsPageComponents($route: $Route, query: {tags?: string}) {
+  const $postGrid = new $PostGrid(query);
+  const $detail = new $DetailPanel({preview: true, tagsType: 'name_only'}).hide(detailPanelEnable$.convert(bool => !bool)).position($route);
+  detailPanelCheck();
+  detailPanelEnable$.on('update', detailPanelCheck)
+  function detailPanelCheck() { detailPanelEnable$.value ? $postGrid.addClass('detail-panel-enabled') : $postGrid.removeClass('detail-panel-enabled') }
+  $postGrid.$focus
+    .on('focus', ({$focused: $target}) => {if ($target instanceof $PostTile) $detail.update($target.post) })
+    .on('blur', () => $detail.update(null))
+  return { $postGrid, $detail };
+}
+
 $.keys($(window))
   .if(e => {
     if ($(e.target) instanceof $Input) return; 
@@ -180,3 +204,4 @@ $.keys($(window))
   })
   .keydown(['q', 'Q'], e => { e.preventDefault(); if ($Router.index !== 0) $.back(); })
   .keydown(['e', 'E'], e => { e.preventDefault(); if ($Router.forwardIndex !== 0) $.forward(); })
+  .keydown('Tab', e => { e.preventDefault(); detailPanelEnable$.set(!detailPanelEnable$.value) })

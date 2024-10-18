@@ -4,7 +4,6 @@ import { Tag } from "./Tag";
 import { User } from "./User";
 import { dateFrom, digitalUnit } from "./Util";
 import { ClientUser } from "./ClientUser";
-import type { FavoriteData } from "./Favorite";
 
 const LOADING_STRING = '...'
 
@@ -132,7 +131,7 @@ export class Post extends $EventManager<{update: []}> {
         const tag_list = this.tag_string.split(' ');
         return [...this.booru.tags.values()].filter(tag => tag_list.includes(tag.name))
     }
-    get previewURL() { return this.media_asset.variants?.find(variant => variant.file_ext === 'webp')?.url ?? this.large_file_url }
+    get previewURL() { return this.media_asset?.variants?.find(variant => variant.file_ext === 'webp')?.url ?? this.large_file_url }
     get booruUrl() { return `${this.booru.origin}/posts/${this.id}` }
     get url() { return `https://danbooru.defaultkavy.com/posts/${this.id}` }
     get isFileSource() { return this.source.startsWith('file://') }

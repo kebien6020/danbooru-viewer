@@ -5,6 +5,7 @@
 @import '/src/component/IconButton/$IconButton';
 @import '/src/component/IonIcon/$IonIcon';
 @import '/src/component/Drawer/$Drawer';
+@import '/src/component/DetailPanel/$DetailPanel';
 // routes
 @import '/src/route/post/$post_route';
 @import '/src/route/login/$login_route';
@@ -154,8 +155,14 @@ nav {
         div.searchbar {
             display: none;
         }
-        div.buttons ion-icon.search {
-            display: inline-block;
+        div.buttons ion-icon {
+            &.search {
+                display: inline-block;
+            }
+
+            &.detail-panel {
+                display: none;
+            }
         }
     }
 }
@@ -173,7 +180,7 @@ router {
 }
 
 route#posts {
-
+    
     header {
         margin-bottom: 1rem;
         h2 {
@@ -185,6 +192,25 @@ route#posts {
             gap: 0.5rem;
         }
     }
+
+    .post-grid.detail-panel-enabled {
+        width: calc(100vw - 300px - 4rem);
+        @media (max-width: 800px) {
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 800px) {
+        detail-panel {
+            display: none;
+        }
+    }
+}
+
+section {
+    background-color: #2f2f45;
+    border-radius: var(--border-radius-large);
+    padding: 20px;
 }
 
 button {

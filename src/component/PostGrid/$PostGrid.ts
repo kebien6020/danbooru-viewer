@@ -34,6 +34,9 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
             } 
         })
         this.on('resize', () => this.resize())
+        this.on('afterRender', () => {
+            this.$focus.currentLayer?.focus(this.$focus.currentLayer.currentFocus);
+        })
         this.events.fire('startLoad');
         this.loader();
         this.$focus.layer(100).loop(false).scrollThreshold($.rem(2) + 60);
@@ -44,11 +47,11 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
                 if (!this.inDOM()) return;
                 return true;
             })
-            .keydown('Tab', e => {
-                e.preventDefault();
-                if (e.shiftKey) this.$focus.prev();
-                else this.$focus.next();
-            })
+            // .keydown('Tab', e => {
+            //     e.preventDefault();
+            //     if (e.shiftKey) this.$focus.prev();
+            //     else this.$focus.next();
+            // })
             .keydown(['w', 'W'], e => { e.preventDefault(); this.$focus.up(); })
             .keydown(['s', 'S'], e => { e.preventDefault(); this.$focus.down(); })
             .keydown(['d', 'D'], e => { e.preventDefault(); this.$focus.right(); })
@@ -169,7 +172,8 @@ interface $PostGridEventMap extends $LayoutEventMap {
     startLoad: [];
     noPost: [];
     endPost: [];
-    post_error: [message: string]
+    post_error: [message: string];
+
 }
 
 interface FavoritesData {
