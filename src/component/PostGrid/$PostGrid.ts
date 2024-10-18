@@ -91,7 +91,7 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
             this.$posts.set(post, $post);
             this.posts.add(post);
         }
-        this.$focus.layer(100).removeAll();
+        this.$focus.layer(100).elementSet.clear();
         const $posts = [...this.orderMap.values()].map(post => this.$posts.get(post)?.self(this.$focus.layer(100).add));
         this.content($posts).render();
         return this;

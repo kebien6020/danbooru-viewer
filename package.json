@@ -2,7 +2,7 @@
   "name": "danbooru-viewer",
   "module": "index.ts",
   "type": "module",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "scripts": {
     "dev": "bun x vite",
     "build": "bun x vite build",
