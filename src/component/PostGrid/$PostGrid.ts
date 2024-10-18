@@ -30,7 +30,7 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
             if (this.finished) { 
                 this.finished = false;
                 this.events.fire('startLoad');
-                this.loader(); 
+                this.loader();
             } 
         })
         this.on('resize', () => this.resize())
@@ -101,6 +101,7 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
         this.posts.clear();
         this.$posts.clear();
         this.orderMap.clear();
+        this.$focus.layer(100).removeAll();
         this.animate({opacity: [1, 0]}, {duration: 300, easing: 'ease'}, () => this.clear().render())
         return this;
     }
