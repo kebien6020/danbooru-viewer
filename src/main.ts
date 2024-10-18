@@ -189,10 +189,11 @@ function $postsPageComponents($route: $Route, query: {tags?: string}) {
   const $postGrid = new $PostGrid(query);
   const $detail = new $DetailPanel({preview: true, tagsType: 'name_only'}).hide(detailPanelEnable$.convert(bool => !bool)).position($route);
   detailPanelCheck();
-  detailPanelEnable$.on('update', detailPanelCheck)
+  detailPanelEnable$.on('update', detailPanelCheck);
+  Booru.events.on('set', () => $detail.update(null));
   function detailPanelCheck() { detailPanelEnable$.value ? $postGrid.addClass('detail-panel-enabled') : $postGrid.removeClass('detail-panel-enabled') }
   $postGrid.$focus
-    .on('focus', ({$focused: $target}) => {if ($target instanceof $PostTile) $detail.update($target.post) })
+    .on('focus', ({$focused: $target}) => {if ($target.inDOM() && $target instanceof $PostTile) $detail.update($target.post) })
     .on('blur', () => $detail.update(null))
   return { $postGrid, $detail };
 }
