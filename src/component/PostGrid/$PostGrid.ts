@@ -87,12 +87,14 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
         for (const post of posts) {
             if (!post.file_url) continue;
             if (this.posts.has(post)) continue;
-            const $post = new $PostTile(post);
+            const $post = new $PostTile(post).on('$focus', (e, $post) => this.$focus.layer(100).focus($post));
             this.$posts.set(post, $post);
             this.posts.add(post);
         }
         this.$focus.layer(100).elementSet.clear();
-        const $posts = [...this.orderMap.values()].map(post => this.$posts.get(post)?.self(this.$focus.layer(100).add));
+        const $posts = [...this.orderMap.values()].map(post => {
+            return this.$posts.get(post)?.self(this.$focus.layer(100).add)
+        });
         this.content($posts).render();
         return this;
     }

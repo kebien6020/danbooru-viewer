@@ -58,7 +58,7 @@ export class $PostTile extends $Container {
                 if (!detailPanelEnable$.value) return;
                 if (innerWidth <= 800) return $.open(this.post.pathname);
                 if ($(document.activeElement) === this) $.open(this.post.pathname);
-                else this.focus();
+                else this.trigger('$focus');
             })
     }
 
