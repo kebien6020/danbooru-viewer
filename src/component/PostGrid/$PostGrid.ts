@@ -34,9 +34,9 @@ export class $PostGrid extends $Layout<$PostGridEventMap> {
             } 
         })
         this.on('resize', () => this.resize())
-        this.on('afterRender', () => {
-            this.$focus.currentLayer?.focus(this.$focus.currentLayer.currentFocus);
-        })
+        // this.on('afterRender', () => {
+        //     this.$focus.currentLayer?.focus(this.$focus.currentLayer.currentFocus);
+        // })
         this.events.fire('startLoad');
         this.loader();
         this.$focus.layer(100).loop(false).scrollThreshold($.rem(2) + 60);
