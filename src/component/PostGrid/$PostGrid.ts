@@ -27,10 +27,7 @@ export class $PostGrid extends $Layout {
         setInterval(async () => { if (this.inDOM() && document.documentElement.scrollTop === 0) await this.posts.fetchPosts('newer'); }, 10000);
         Booru.events.on('set', () => {
             this.removeAll();
-            if (this.posts.finished) { 
-                this.posts.finished = false;
-                this.loader();
-            } 
+            this.loader();
         })
         this.on('resize', () => this.resize())
         // this.on('afterRender', () => {
@@ -98,7 +95,6 @@ export class $PostGrid extends $Layout {
     }
 
     removeAll() {
-        this.posts.clear();
         this.$posts.clear();
         this.$focus.layer(100).removeAll();
         this.animate({opacity: [1, 0]}, {duration: 300, easing: 'ease'}, () => this.clear().render())

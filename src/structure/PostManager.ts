@@ -13,6 +13,12 @@ export class PostManager {
     constructor(tags?: string) {
         this.tags = tags;
         PostManager.managers.set(this.tags, this);
+        Booru.events.on('set', () => {
+            this.clear();
+            if (this.finished) { 
+                this.finished = false;
+            } 
+        })
     }
 
     static get(tags: string | undefined) {
