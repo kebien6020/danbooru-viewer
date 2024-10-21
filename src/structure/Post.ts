@@ -17,7 +17,7 @@ export class Post extends $EventManager<{update: []}> {
     score$ = $.state(0);
     file_size$ = $.state(LOADING_STRING);
     file_ext$ = $.state(LOADING_STRING);
-    file_url$ = $.state(LOADING_STRING);
+    file_url$ = $.state<string | undefined>(LOADING_STRING);
     source$ = $.state(LOADING_STRING);
     dimension$ = $.state(LOADING_STRING);
     booruUrl$ = $.state(LOADING_STRING);
@@ -61,13 +61,16 @@ export class Post extends $EventManager<{update: []}> {
         }
         const dataArray = await booru.fetch<PostData[]>(`/posts.json?limit=${limit}&tags=${tagsQuery}${page ? `&page=${page}` : ''}&_method=get`);
         if (dataArray instanceof Array === false) return [];
+        const tagnameSet = new Set<string>();
         const list = dataArray.map(data => {
             const instance = booru.posts.get(data.id)?.update(data) ?? new this(booru, data.id, data);
             booru.posts.set(instance.id, instance);
+            instance.tag_string.split(' ').forEach(tag_name => tagnameSet.add(tag_name))
             return instance;
         });
         if (!list.length) return list;
         const userIds = [...new Set(dataArray.map(data => [data.approver_id, data.uploader_id].detype(null)).flat())];
+        // Tag.fetchMultiple(booru, {name: tagnameSet.array.toString().replaceAll(',', ' ')});
         User.fetchMultiple(booru, {id: userIds}).then(() => list.forEach(post => post.update$()));
         return list;
     }
@@ -97,7 +100,10 @@ export class Post extends $EventManager<{update: []}> {
 
     async fetchTags() {
         await this.ready;
-        return await Tag.fetchMultiple(this.booru, {name: {_space: this.tag_string}});
+        const uncached_tags = this.tag_string.split(' ').filter(tag_name => !Tag.get(this.booru, tag_name));
+        if (!uncached_tags.length) return this;
+        await Tag.fetchMultiple(this.booru, {name: {_space: uncached_tags.toString().replaceAll(',', ' ')}});
+        return this;
     }
 
     async createFavorite() {
@@ -182,7 +188,7 @@ export interface PostData extends PostOptions {
     "tag_string_copyright": string,
     "tag_string_artist": string,
     "tag_string_meta": string,
-    "file_url": string,
+    "file_url"?: string,
     "large_file_url": string,
     "preview_file_url": string
 }

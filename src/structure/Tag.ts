@@ -1,4 +1,4 @@
-import type { Booru } from "./Booru";
+import { Booru } from "./Booru";
 
 export interface TagOptions {}
 export interface Tag extends TagData {}
@@ -39,6 +39,10 @@ export class Tag {
             return instance;
         });
         return list;
+    }
+
+    static get(booru: Booru, name: string) {
+        return [...booru.tags.values()].find(tag => tag.name === name);
     }
 
     update(data: TagData) {

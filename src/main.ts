@@ -112,9 +112,11 @@ $(document.body).content([
         ]),
         $('div').class('no-post').hide(true).self($div => {
           $div.on('startLoad', () => $div.hide(true))
-          $postGrid
-            .on('noPost', () => $div.hide(false).content('No Posts'))
-            .on('post_error', message => $div.hide(false).content(message))
+          $postGrid.self(() => {
+            $postGrid.posts.events
+              .on('noPost', () => $div.hide(false).content('No Posts'))
+              .on('post_error', message => $div.hide(false).content(message))
+          })
         }),
         $postGrid,
         $detail

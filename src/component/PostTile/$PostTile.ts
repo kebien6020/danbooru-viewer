@@ -2,13 +2,16 @@ import { $Container, $Image, $State, $Video } from "elexis";
 import type { Post } from "../../structure/Post";
 import { time } from "../../structure/Util";
 import { detailPanelEnable$ } from "../../main";
+import type { $PostGrid } from "../PostGrid/$PostGrid";
 export class $PostTile extends $Container {
     post: Post;
     $video: $Video | null;
     $img: $Image;
     duration$ = $.state(``);
-    constructor(post: Post) {
+    $grid: $PostGrid;
+    constructor($grid: $PostGrid, post: Post) {
         super('post-tile');
+        this.$grid = $grid;
         this.post = post;
         this.$video = this.post.isVideo ? $('video').width(this.post.image_width).height(this.post.image_height).disablePictureInPicture(true).loop(true).muted(true).hide(true).on('mousedown', (e) => e.preventDefault()) : null;
         this.$img = $('img').draggable(false).css({opacity: '0'}).width(this.post.image_width).height(this.post.image_height).src(this.post.previewURL).loading('lazy');
@@ -35,7 +38,7 @@ export class $PostTile extends $Container {
                     $('span').content('GIF')
                 ]) : null,
             // Tile
-            $('a').href(this.post.pathname).preventDefault(detailPanelEnable$).content(() => [
+            $('a').href(this.url).preventDefault(detailPanelEnable$).content(() => [
                 this.$video,
                 this.$img.on('mousedown', (e) => e.preventDefault())
                     .once('load', (e, $img) => { 
@@ -67,4 +70,6 @@ export class $PostTile extends $Container {
         const t = time(this.post.media_asset.duration * 1000 - this.$video.currentTime() * 1000)
         this.duration$.set(Number(t.hh) > 0 ? `${t.hh}:${t.mm}:${t.ss}` : `${t.mm}:${t.ss}`)
     }
+
+    get url() { return `${this.post.pathname}${this.$grid.tags ? `?q=${this.$grid.tags}` : ''}` }
 }

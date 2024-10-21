@@ -37,10 +37,10 @@ export class $DetailPanel extends $Container {
                             new $Property('favorites').name('Favorites').content(this.post.favcount$),
                             new $Property('score').name('Score').content(this.post.score$)
                         ]),
-                        new $Property('file-url').name('File').content([
-                            $('a').href(this.post.file_url$).content(this.post.file_url$.convert((value) => value.replace('https://', ''))).target('_blank'),
-                            $('ion-icon').name('clipboard').on('click', (e, $ion) => this.copyButtonHandler($ion, this.post!.file_url))
-                        ]),
+                        this.post.file_url ? new $Property('file-url').name('File').content([
+                            $('a').href(this.post.file_url$).content(this.post.file_url$.convert((value) => value ? value.replace('https://', '') : '' )).target('_blank'),
+                            $('ion-icon').name('clipboard').on('click', (e, $ion) => this.copyButtonHandler($ion, this.post!.file_url!))
+                        ]) : null,
                         new $Property('source-url').name('Source').content([
                             $('a').href(this.post.source$).content(this.post.source$.convert((value) => value.replace('https://', ''))).target('_blank'),
                             $('ion-icon').name('clipboard').on('click', (e, $ion) => this.copyButtonHandler($ion, this.post!.source))
@@ -56,7 +56,7 @@ export class $DetailPanel extends $Container {
                     ]),
                     $('div').class('post-tags').content(async $tags => {
                         if (this.options.tagsType === 'detail') {
-                            const tags = await this.post!.fetchTags();
+                            const tags = (await this.post!.fetchTags()).tags;
                             const [artist_tags, char_tags, gen_tags, meta_tags, copy_tags] = [
                                 tags.filter(tag => tag.category === TagCategory.Artist),
                                 tags.filter(tag => tag.category === TagCategory.Character),
