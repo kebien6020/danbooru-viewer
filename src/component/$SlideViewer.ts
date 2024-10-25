@@ -94,8 +94,9 @@ export class $SlideViewer extends $Container<HTMLElement, $SlideViewerEventMap> 
         }, {
             duration: 300,
             easing: ease ? 'ease' : 'ease-out',
-        }, () => {
-            this.__render__();
+        }, (animation) => {
+            this.$container.css({left: `-${this.getPositionLeft(currentIndex)}px`})
+            this.__render__(false);
         })
     }
 
@@ -124,7 +125,7 @@ export class $SlideViewer extends $Container<HTMLElement, $SlideViewerEventMap> 
 
     protected getPositionLeft(index: number) { return index * this.dom.clientWidth }
 
-    protected __render__() {
+    protected __render__(positioning = true) {
         let i = 0;
         this.slideMap.forEach($slide => {
             $slide.hide(true, false);
@@ -137,7 +138,7 @@ export class $SlideViewer extends $Container<HTMLElement, $SlideViewerEventMap> 
         if (currentIndex !== 0) this.slideList.at(currentIndex - 1)?.build().hide(false, false);
         if (currentIndex !== this.slideList.length - 1) this.slideList.at(currentIndex + 1)?.build().hide(false, false);
         this.$container.children.render();
-        this.$container.css({left: `-${this.getPositionLeft(currentIndex)}px`})
+        if (positioning) this.$container.css({left: `-${this.getPositionLeft(currentIndex)}px`})
     }
 
     pointerException(resolver: (pointer: $Pointer, e: PointerEvent) => boolean) {
