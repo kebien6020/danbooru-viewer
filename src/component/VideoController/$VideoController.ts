@@ -1,13 +1,14 @@
 import { $Container, $Node, type $Video } from "elexis";
 import { time } from "../../structure/Util";
 import type { Post } from "../../structure/Post";
+import type { $PostViewer } from "../PostViewer/$PostViewer";
 
 export class $VideoController extends $Container {
     $video: $Video;
     $viewer: $Container;
     duration$ = $.state('00:00');
     post: Post;
-    constructor($video: $Video, $viewer: $Container, post: Post) {
+    constructor($video: $Video, $viewer: $PostViewer, post: Post) {
         super('video-controller')
         this.$video = $video
         this.$viewer = $viewer;

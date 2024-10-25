@@ -31,6 +31,16 @@ export class PostManager {
         this.orderMap.clear();
         this.cache.clear();
     }
+
+    addPosts(posts: OrArray<Post>) {
+        posts = $.orArrayResolve(posts);
+        for (const post of posts) {
+            if (!post.file_url) continue;
+            if (this.cache.has(post)) continue;
+            this.cache.add(post);
+        }
+        return this;
+    }
     
     async fetchPosts(direction: 'newer' | 'older'): Promise<Post[]> {
         const tags = this.tags ? decodeURIComponent(this.tags).split('+') : undefined;
@@ -64,7 +74,7 @@ export class PostManager {
                     newPostOrderMap.set(fav.id, post);
                 }
                 this.orderMap = new Map(direction === 'newer' ? [...newPostOrderMap, ...this.orderMap] : [...this.orderMap, ...newPostOrderMap]);
-                this.events.fire('post_fetch', posts);
+                this.events.fire('post_fetch', {manager: this, postList: posts});
                 return posts;
             }
 
@@ -74,7 +84,7 @@ export class PostManager {
                 const newPostOrderMap = new Map(posts.filter(post => post.file_url).map(post => [post.id, post]));
                 newPostOrderMap.forEach((post, id) => { if (this.orderMap.has(id)) newPostOrderMap.delete(id) });
                 this.orderMap = new Map(direction === 'newer' ? [...newPostOrderMap, ...this.orderMap] : [...this.orderMap, ...newPostOrderMap])
-                this.events.fire('post_fetch', posts);
+                this.events.fire('post_fetch', {manager: this, postList: posts});
             }
         } else {
             const beforeAfter = this.orderKeyList.length ? direction === 'newer' ? `a${this.orderKeyList.at(0)}` : `b${this.orderKeyList.at(-1)}` : undefined;
@@ -89,7 +99,8 @@ export class PostManager {
             else this.events.fire('endPost')
         }
 
-        this.events.fire('post_fetch', posts);
+        this.events.fire('post_fetch', {manager: this, postList: posts});
+        this.addPosts(posts);
         return posts
     }
 
@@ -101,7 +112,7 @@ interface PostManagerEventMap {
     noPost: [];
     endPost: [];
     post_error: [message: string];
-    post_fetch: [Post[]];
+    post_fetch: [{manager: PostManager, postList: Post[]}];
 }
 
 interface FavoritesData {

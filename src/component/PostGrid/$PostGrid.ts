@@ -9,7 +9,7 @@ interface $PostGridOptions {
     tags?: string
 }
 export class $PostGrid extends $Layout {
-    $posts = new Map<Post, $PostTile>();
+    $postMap = new Map<Post, $PostTile>();
     tags?: string;
     $focus = $.focus();
     posts: PostManager;
@@ -23,7 +23,7 @@ export class $PostGrid extends $Layout {
     }
 
     protected async init() {
-        this.posts.events.on('post_fetch', (posts) => { this.addPost(posts) })
+        this.posts.events.on('post_fetch', (posts) => { this.renderPosts() })
         setInterval(async () => { if (this.inDOM() && document.documentElement.scrollTop === 0) await this.posts.fetchPosts('newer'); }, 10000);
         Booru.events.on('set', () => {
             this.removeAll();
@@ -38,8 +38,8 @@ export class $PostGrid extends $Layout {
 
         $.keys($(window))
             .if(e => {
-                if ($(e.target) instanceof $Input) return; 
                 if (!this.inDOM()) return;
+                if ($(e.target) instanceof $Input) return; 
                 return true;
             })
             // .keydown('Tab', e => {
@@ -77,25 +77,19 @@ export class $PostGrid extends $Layout {
         this.column(col >= 2 ? col : 2);
     }
 
-    addPost(posts: OrArray<Post>) {
-        posts = $.orArrayResolve(posts);
-        for (const post of posts) {
-            if (!post.file_url) continue;
-            if (this.posts.cache.has(post)) continue;
-            const $post = new $PostTile(this, post).on('$focus', (e, $post) => this.$focus.layer(100).focus($post));
-            this.$posts.set(post, $post);
-            this.posts.cache.add(post);
-        }
+    renderPosts() {
         this.$focus.layer(100).elementSet.clear();
-        const $posts = [...this.posts.orderMap.values()].map(post => {
-            return this.$posts.get(post)?.self(this.$focus.layer(100).add)
+        const $postList = [...this.posts.orderMap.values()].map(post => {
+            const $post = this.$postMap.get(post) ?? new $PostTile(this, post).on('$focus', (e, $post) => this.$focus.layer(100).focus($post));
+            this.$postMap.set(post, $post)
+            return $post.self(this.$focus.layer(100).add)
         });
-        this.content($posts).render();
+        this.content($postList).render();
         return this;
     }
 
     removeAll() {
-        this.$posts.clear();
+        this.$postMap.clear();
         this.$focus.layer(100).removeAll();
         this.animate({opacity: [1, 0]}, {duration: 300, easing: 'ease'}, () => this.clear().render())
         return this;

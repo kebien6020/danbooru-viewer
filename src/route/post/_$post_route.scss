@@ -2,11 +2,9 @@
     padding: 0;
     padding-top: var(--nav-height);
 
-    div.viewer {
+    slide-viewer {
+        display: block;
         height: calc(100dvh - 2rem - var(--nav-height));
-        display: flex;
-        justify-content: center;
-        align-items: center;
         background-color: #000000;
         border-radius: var(--border-radius-large);
         overflow: hidden;
@@ -14,6 +12,7 @@
         margin: 1rem;
         position: relative;
         transition: all 0.3s ease;
+        touch-action: none;
         
         @media (max-width: 800px) {
             width: 100%;
@@ -21,6 +20,19 @@
             border-radius: 0;
             margin:0;
         }
+    }
+
+    div.viewer {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #000000;
+        border-radius: var(--border-radius-large);
+        overflow: hidden;
+        position: relative;
+        transition: all 0.3s ease;
 
         img {
             max-width: 100%;

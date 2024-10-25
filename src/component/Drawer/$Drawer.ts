@@ -57,7 +57,7 @@ export class $Drawer extends $Container {
         ])
 
         this.pointers.on('move', pointer => {
-            if ($(':.viewer')?.contains(pointer.$target)) return;
+            if ($(':slide-viewer')?.contains(pointer.$target)) return;
             pointer.$target.parent
             if (pointer.type !== 'pen' && pointer.type !== 'touch') return;
             if (pointer.move_y > 4 || pointer.move_y < -4) return;

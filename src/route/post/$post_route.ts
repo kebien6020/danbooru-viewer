@@ -1,25 +1,19 @@
 import { Post } from "../../structure/Post";
 import { ArtistCommentary } from "../../structure/Commentary";
 import { Booru } from "../../structure/Booru";
-import { ClientUser } from "../../structure/ClientUser";
-import { $VideoController } from "../../component/VideoController/$VideoController";
 import { $Input } from "elexis/lib/node/$Input";
 import { $DetailPanel } from "../../component/DetailPanel/$DetailPanel";
 import { PostManager } from "../../structure/PostManager";
+import { $PostViewer } from "../../component/PostViewer/$PostViewer";
+import { $Slide, $SlideViewer } from "../../component/$SlideViewer";
+import { $Video } from "elexis";
 
 export const post_route = $('route').path('/posts/:id?q').id('post').static(false).builder(({$route, params}) => {
     if (!Number(params.id)) return $('h1').content('404: POST NOT FOUND');
-    const $video = $('video');
     const events = $.events<{
-        viewerPanel_hide: [],
-        viewerPanel_show: [],
-        viewerPanel_switch: [],
-        original_size: [],
-        video_play_pause: [],
         post_switch: [Post]
     }>();
-    let post: Post, posts: PostManager | undefined;
-    events.on('video_play_pause', () => { if ($video.isPlaying) $video.pause(); else $video.play() })
+    let post: Post, posts: PostManager;
     $.keys($(window)).self($keys => $keys
         .if(e => {
             if ($(e.target) instanceof $Input) return;
@@ -30,103 +24,76 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
             if (Booru.used.user?.favorites.has(post.id)) post.deleteFavorite();
             else post.createFavorite();
         })
-        .keydown(' ', e => {
-            e.preventDefault();
-            if ($video.isPlaying) $video.pause();
-            else $video.play();
-        })
         .keydown(['a', 'A'], e => navPost('prev') )
         .keydown(['d', 'D'], e => { navPost('next') })
     )
-
-    $route.on('open', ({params, query}) => {
-        posts = query.q?.includes('order:') ? undefined : PostManager.get(query.q);
+    const $slideViewerMap = new Map<string | undefined, $SlideViewer>();
+    $route.on('open', async ({params, query}) => {
+        posts = PostManager.get(query.q);
         post = Post.get(Booru.used, +params.id);
-        if (posts) {
-            if (!posts.orderMap.size || !posts.cache.has(post)) {
-                posts.cache.add(post);
-                posts.orderMap.set(post.id, post);
-                posts.fetchPosts('newer');
+        posts.events.on('post_fetch', slideViewerHandler);
+        if (!posts.orderMap.size || !posts.cache.has(post)) {
+            await post.ready
+            posts.addPosts(post);
+            posts.orderMap.set(post.id, post);
+            posts.fetchPosts('newer');
+            posts.fetchPosts('older');
+        } else {
+            const ordered = [...posts.orderMap.values()];
+            const index = ordered.indexOf(post);
+            if (!posts.finished && index === ordered.length - 1) {
                 posts.fetchPosts('older');
-            } else {
-                const ordered = [...posts.orderMap.values()];
-                const index = ordered.indexOf(post);
-                if (!posts.finished && index > ordered.length - posts.limit / 2) {
-                    posts.fetchPosts('older');
-                } else if (index === 0) {
-                    posts.fetchPosts('newer');
-                }
+            } else if (index === 0) {
+                posts.fetchPosts('newer');
             }
         }
+        slideViewerHandler({manager: posts});
+        const $slideViewer = $getSlideViewer(posts.tags)
+        $slideViewer.switch(post.id);
         events.fire('post_switch', post);
     })
 
+    function $getSlideViewer(q: string | undefined) {
+        const $slideViewer = $slideViewerMap.get(q) ?? 
+            new $SlideViewer()
+                .pointerException((pointer) => {
+                    if ($slideViewer.currentSlide?.$('::.progressbar-container').find($div => $div.contains(pointer.$target))) return false;
+                    if (pointer.type === 'mouse') return false;
+                    return true;
+                })
+                .on('switch', ({nextSlide: $target}) => {
+                    $.replace(`/posts/${$target.slideId()}${q ? `?q=${q}` : ''}`);
+                }).on('beforeSwitch', ({prevSlide, nextSlide}) => {
+                    const $prevVideo = prevSlide?.$<$Video>(':video');
+                    if ($prevVideo?.isPlaying) $prevVideo.pause();
+                    const $nextVideo = nextSlide.$<$Video>(':video');
+                    if ($nextVideo?.isPlaying === false) $nextVideo.play();
+                })
+        $slideViewerMap.set(q, $slideViewer);
+        return $slideViewer;
+    }
+
     function navPost(dir: 'next' | 'prev') {
-        if (!posts) return;
         const orderList = [...posts.orderMap.values()];
         const index = orderList.indexOf(post);
         if (dir === 'prev' && index === 0) return;
         const targetPost = orderList.at(dir === 'next' ? index + 1 : index - 1);
         if (!targetPost) return;
-        $.replace(`/posts/${targetPost.id}${posts.tags ? `?q=${posts.tags}` : ''}`)
+        $.replace(`/posts/${targetPost.id}${posts.tags ? `?q=${posts.tags}` : ''}`);
+    }
+
+    function slideViewerHandler(params: {manager: PostManager}) {
+        const { manager: posts } = params;
+        const $slideViewer = $getSlideViewer(posts.tags);
+        const postList = posts.cache.array.filter(post => !$slideViewer.slideMap.has(post.id));
+        $slideViewer.addSlides(postList.map(post => new $Slide().slideId(post.id).builder(() => new $PostViewer(post))));
+        if (postList.length) $slideViewer.arrange([...posts.orderMap.values()].map(post => post.id));
     }
 
     return [
-        $('div').class('viewer').self(async ($viewer) => {
-            $viewer
-                .on('pointermove', (e) => {
-                    if (e.pointerType === 'mouse' || e.pointerType === 'pen') events.fire('viewerPanel_show');
-                })
-                .on('pointerup', (e) => {
-                    if ( $(':.viewer-panel .panel')?.contains($(e.target)) ) return;
-                    if (e.pointerType === 'touch') events.fire('viewerPanel_switch');
-                    if (e.pointerType === 'mouse') events.fire('video_play_pause');
-                })
-                .on('mouseleave', () => {
-                    events.fire('viewerPanel_hide');
-                })
-            events.on('post_switch', async post => {
-                await post.ready;
-                $viewer.content([
-                    $('div').class('viewer-panel').hide(false)
-                        .content([
-                            $('div').class('panel').content([
-                                post.isVideo ? new $VideoController($video, $viewer, post) : null,
-                                $('div').class('buttons').content([
-                                    $('ion-icon').title('Favorite').name('heart-outline').self($heart => {
-                                        ClientUser.events.on('favoriteUpdate', (user) => {
-                                            if (user.favorites.has(post.id)) $heart.name('heart');
-                                            else $heart.name('heart-outline');
-                                        })
-                                        if (Booru.used.user?.favorites.has(post.id)) $heart.name('heart');
-                                        $heart.on('click', () => {
-                                            if (Booru.used.user?.favorites.has(post.id)) post.deleteFavorite();
-                                            else post.createFavorite();
-                                        })
-                                    }),
-                                    $('ion-icon').title('Original Size').name('resize-outline').self($original => {
-                                        $original.on('click', () => { events.fire('original_size'); $original.disable(true); })
-                                        if (!post.isLargeFile || post.isVideo) $original.disable(true);
-                                    })
-                                ])
-                            ]),
-                            $('div').class('overlay')
-                        ])
-                        .self($viewerPanel => {
-                            events.on('viewerPanel_hide', () => $viewerPanel.hide(true))
-                                .on('viewerPanel_show', () => $viewerPanel.hide(false))
-                                .on('viewerPanel_switch', () => $viewerPanel.hide(!$viewerPanel.hide()))
-                        }),
-                    post.isVideo
-                    ? $video.height(post.image_height).width(post.image_width).src(post.file_ext === 'zip' ? post.large_file_url : post.file_url).controls(false).autoplay(true).loop(true).disablePictureInPicture(true)
-                    : $('img').height(post.image_height).width(post.image_width).self($img => {
-                        $img.once('load', () => 
-                            $img.once('load', () => $img.removeClass('loading')).src(post.isLargeFile ? post.large_file_url : post.file_url)
-                        ).src(post.preview_file_url)
-                        if (!$img.complete) $img.class('loading')
-                        events.on('original_size', () => $img.src(post.file_url))
-                    })
-                ])
+        $('div').class('slide-viewer-container').self($div => {
+            $route.on('open', () => {
+                $div.content($getSlideViewer(posts.tags))
             })
         }),
         $('div').class('content').content([
