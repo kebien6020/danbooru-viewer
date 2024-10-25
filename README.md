@@ -1,13 +1,12 @@
 # Danbooru Viewer
 A modern style viewer for [Danbooru](https://danbooru.donmai.us) or other Booru API base site.
 
-## Usage
+## How To Use
 - Enter this URL: [https://danbooru.defaultkavy.com](https://danbooru.defaultkavy.com).
-- Replace `danbooru.donmai.us` to `danbooru.defaultkavy.com` without changing pathname and url query, will directly open the same page on Danbooru Viewer.
-- Clone this repository and run commands:
+- Or, replace `danbooru.donmai.us` to `danbooru.defaultkavy.com` without changing pathname and url query, will directly open the same page on Danbooru Viewer.
+- Or, clone this repository and run commands for self-hosting:
   ```sh
-    bun i
-    bun run build
+    bun i --production
     bun run start
   ```
 
@@ -16,18 +15,30 @@ A modern style viewer for [Danbooru](https://danbooru.donmai.us) or other Booru 
     - Support URL query like `/posts?tags=ord:fav+minato_aqua`.
 - Search tags with autocomplete.
 - Infinite scroll posts with waterfall image layout.
-- Mobile friendly with modern design.
+- Mobile friendly.
+
+## Hotkeys
+- Global Shortcut
+  - `Q`: Back.
+  - `E`: Forward.
+  - `/`: Open search bar.
+- Posts Browser Page
+  - `W/A/S/D`: Navigation posts in direction.
+  - `Tab`: Toogle post detail panel.
+  - `Space/Enter`: Open selected post page.
+- Post Page
+  - `A/D`: Switch to previous/next post page.
+  - `Spacebar`: Play/Pause video.
 
 ## Roadmap to V1.0
 - [x] Posts Page
 - [x] Posts Search with any tags
 - [x] Booru Account Login (Using API keys)
 - [x] Favorite Post with Account
+- [x] Post Detail Panel in Posts Browser
 - [ ] Saved Searches
 - [ ] User Page
 - [ ] Post Commentary
-- [ ] Post Detail Panel
-- [ ] Forum Posts Page
 - [ ] More...
 
 ## Tools
