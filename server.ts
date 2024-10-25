@@ -74,12 +74,15 @@ const app = new Elysia()
             return data
         })
     })
+    .get('/statics/*', (res => {
+        return Bun.file(`./dist/${res.path}`)
+    }))
     .listen(3030);
 console.log('Start listening: 3030')
 export type Server = typeof app;
 
-function og(property: string, content: string) {
-    return `<meta property=${property} content="${content}">`
+function og(property: string, content: string | undefined) {
+    return `<meta property=${property} content="${content ?? ''}">`
 }
 
 export function digitalUnit(bytes: number) {

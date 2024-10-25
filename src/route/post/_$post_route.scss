@@ -12,7 +12,7 @@
         margin: 1rem;
         position: relative;
         transition: all 0.3s ease;
-        touch-action: none;
+        touch-action: pan-y;
         
         @media (max-width: 800px) {
             width: 100%;

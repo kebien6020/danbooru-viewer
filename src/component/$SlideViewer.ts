@@ -1,4 +1,4 @@
-import { $Container, $Element, $Node, $Pointer, $PointerManager, type $ContainerContentType, type $ContainerEventMap, type $EventMap } from "elexis";
+import { $Container, $Element, $Node, $Pointer, $PointerDirection, $PointerManager, type $ContainerContentType, type $ContainerEventMap, type $EventMap } from "elexis";
 
 export class $SlideViewer extends $Container<HTMLElement, $SlideViewerEventMap> {
     pointers = new $PointerManager(this);
@@ -28,6 +28,7 @@ export class $SlideViewer extends $Container<HTMLElement, $SlideViewerEventMap> 
             containerStartLeft = this.$container.offsetLeft;
         })
         this.pointers.on('move', ($pointer, e) => {
+            if ($pointer.direction !== $PointerDirection.Horizontal) return;
             e.preventDefault();
             containerLeft = containerStartLeft + $pointer.move_x;
             if (containerLeft > containerStartLeft && this.slideList.at(0)?.slideId() === this.slideId) return;
