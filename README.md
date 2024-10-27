@@ -1,5 +1,7 @@
-# Danbooru Viewer
-A modern style viewer for [Danbooru](https://danbooru.donmai.us) or other Booru API base site.
+<picture style="display: flex; justify-content: center;">
+  <img style="max-width: 500px" src="https://git.defaultkavy.com/defaultkavy/danbooru-viewer/raw/branch/asset/danbooru-viewer-logo.png" alt="Danbooru Viewer Logo">
+</picture>
+<p style="text-align: center">A modern style viewer for <a href="https://danbooru.donmai.us">Dannbooru</a> or other Booru API base site.</p>
 
 ## How To Use
 - Enter this URL: [https://danbooru.defaultkavy.com](https://danbooru.defaultkavy.com).
