@@ -42,7 +42,6 @@ const app = new Elysia()
             const byArtist = `${list_format.format(data.tag_string_artist.split(' '))}`;
             const characters = data.tag_string_character.split(' ').map(str => {
                 const matched = str.match(/([a-z-_]+)(?:\((\w+)\))?/)
-                console.debug(str)
                 return matched?.at(1)?.replaceAll('_', ' ')
             }).filter(str => str !== undefined);
             const copyrights = data.tag_string_copyright.split(' ').map(str => {

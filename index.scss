@@ -1,14 +1,14 @@
 // components
-@import '/src/component/PostGrid/$PostGrid';
-@import '/src/component/PostTile/$PostTile';
-@import '/src/component/Searchbar/$Searchbar';
-@import '/src/component/IconButton/$IconButton';
-@import '/src/component/IonIcon/$IonIcon';
-@import '/src/component/Drawer/$Drawer';
-@import '/src/component/DetailPanel/$DetailPanel';
+@forward '/src/component/PostGrid/$PostGrid';
+@forward '/src/component/PostTile/$PostTile';
+@forward '/src/component/Searchbar/$Searchbar';
+@forward '/src/component/IconButton/$IconButton';
+@forward '/src/component/IonIcon/$IonIcon';
+@forward '/src/component/Drawer/$Drawer';
+@forward '/src/component/DetailPanel/$DetailPanel';
 // routes
-@import '/src/route/post/$post_route';
-@import '/src/route/login/$login_route';
+@forward '/src/route/post/$post_route';
+@forward '/src/route/login/$login_route';
 
 :root {
     --primary-color: #d1d1ee;
