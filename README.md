@@ -1,5 +1,5 @@
 <picture style="display: flex; justify-content: center;">
-  <img style="max-width: 500px" src="https://git.defaultkavy.com/defaultkavy/danbooru-viewer/raw/branch/asset/danbooru-viewer-logo.png" alt="Danbooru Viewer Logo">
+  <img style="max-width: 500px" src="https://raw.githubusercontent.com/defaultkavy-dev/danbooru-viewer/refs/heads/asset/danbooru-viewer-logo.png" alt="Danbooru Viewer Logo">
 </picture>
 <p style="text-align: center">A modern style viewer for <a href="https://danbooru.donmai.us">Dannbooru</a> or other Booru API base site.</p>
 
