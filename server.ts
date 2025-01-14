@@ -18,24 +18,27 @@ const app = new Elysia()
                 case 'jpg':
                 case 'gif': {
                     $('head')
+                        .append(og('og:type', 'image'))
                         .append(og("og:image", data.file_url))
                         .append(og("og:image:secure_url", data.file_url))
                         .append(og('og:image:type', `image/${data.file_ext}`))
                         .append(og('og:image:height', data.image_height.toString()))
                         .append(og('og:image:width', data.image_width.toString()))
                         .append(og('twitter:image', data.file_url))
+                        .append(og('twitter:card', 'summary_large_image'))
                     break;
                 }
-                case 'zip': $('head').append(og("og:video", data.media_asset.variants.find(v => v.file_ext === 'webm')?.url ?? '')); break;
+                case 'zip':
                 case 'mp4':
                 case 'webm': {
                     $('head')
-                        .append(og("og:video", data.file_url))
+                        .append(og('og:type', 'video'))
+                        .append(og("og:video", data.file_ext === 'zip' ? data.media_asset.variants.find(v => v.file_ext === 'webm')?.url ?? '' : data.file_url))
                         .append(og("og:video:secure_url", data.file_url)) 
                         .append(og("og:video:type", `video/${data.file_ext}`)) 
                         .append(og("og:video:height", data.image_height.toString())) 
                         .append(og("og:video:width", data.image_width.toString())) 
-                        .append(og("og:image", data.media_asset.variants.find(v => v.file_ext === 'webp')?.url ?? '')) 
+                        .append(og('twitter:card', 'player'))
                     break;
                 }
             }
@@ -55,12 +58,10 @@ const app = new Elysia()
                 .append(og('og:title', title))
                 .append(og('og:description', description))
                 .append(og('og:site_name', 'Danbooru Viewer'))
-                .append(og('og:type', 'website'))
                 .append(og('og:url', `https://danbooru.defaultkavy.com/${path}`))
                 .append(og('twitter:site', '@defaultkavy_dev'))
                 .append(og('twitter:title', title))
                 .append(og('twitter:description', description))
-                .append(og('twitter:card', 'summary_large_image'))
         }
         return $.html()
     })
