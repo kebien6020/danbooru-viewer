@@ -28,12 +28,24 @@ const app = new Elysia()
                         .append(og('twitter:card', 'summary_large_image'))
                     break;
                 }
-                case 'zip':
+                case 'zip': {
+                    const img_url = data.media_asset.variants.find(v => v.file_ext === 'webp')
+                    if (!img_url) break;
+                    $('head')
+                        .append(og("og:image", img_url.url))
+                        .append(og('twitter:image', img_url.url))
+                        .append(og("og:image:secure_url", img_url.url))
+                        .append(og('og:image:type', `image/${img_url.file_ext}`))
+                        .append(og('og:image:height', img_url.height.toString()))
+                        .append(og('og:image:width', img_url.width.toString()))
+                        .append(og('twitter:card', 'summary_large_image'))
+                    break;
+                }
                 case 'mp4':
                 case 'webm': {
                     $('head')
                         .append(og('og:type', 'video'))
-                        .append(og("og:video", data.file_ext === 'zip' ? data.media_asset.variants.find(v => v.file_ext === 'webm')?.url ?? '' : data.file_url))
+                        .append(og("og:video", data.file_url))
                         .append(og("og:video:secure_url", data.file_url)) 
                         .append(og("og:video:type", `video/${data.file_ext}`)) 
                         .append(og("og:video:height", data.image_height.toString())) 
