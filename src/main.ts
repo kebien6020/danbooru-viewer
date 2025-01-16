@@ -1,6 +1,6 @@
 import 'elexis';
-import '@elexis/layout';
-import '@elexis/router';
+import '@elexis.js/layout';
+import '@elexis.js/router';
 import { Booru } from './structure/Booru';
 import { post_route } from './route/post/$post_route';
 import { $PostGrid } from './component/PostGrid/$PostGrid';
