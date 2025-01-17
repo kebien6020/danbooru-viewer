@@ -1,4 +1,4 @@
-import { $Layout, type $LayoutEventMap } from "@elexis/layout";
+import { $Layout, type $LayoutEventMap } from "@elexis.js/layout";
 import { Booru } from "../../structure/Booru";
 import { Post } from "../../structure/Post";
 import { $PostTile } from "../PostTile/$PostTile";
