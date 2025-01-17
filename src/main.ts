@@ -4,7 +4,7 @@ import '@elexis.js/router';
 import { Booru } from './structure/Booru';
 import { post_route } from './route/post/$post_route';
 import { $PostGrid } from './component/PostGrid/$PostGrid';
-import { $Route, $Router, $RouterAnchor, $RouterNavigationDirection } from '@elexis/router';
+import { $Route, $Router, $RouterAnchor, $RouterNavigationDirection } from '@elexis.js/router';
 import { $Searchbar } from './component/Searchbar/$Searchbar';
 import { $IonIcon } from './component/IonIcon/$IonIcon';
 import { $IconButton } from './component/IconButton/$IconButton';

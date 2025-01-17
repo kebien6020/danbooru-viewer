@@ -4,7 +4,7 @@ import { Booru } from "../../structure/Booru";
 import { Tag, TagCategory } from "../../structure/Tag";
 import { numberFormat } from "../../structure/Util";
 import type { $IonIcon } from "../IonIcon/$IonIcon";
-import type { $Route } from "@elexis/router";
+import type { $Route } from "@elexis.js/router";
 
 export class $DetailPanel extends $Container {
     post: Post | null = null;
