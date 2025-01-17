@@ -11,6 +11,10 @@
     bun i --production
     bun run start
   ```
+- Or, you can also self-host using the Docker image:
+  ```sh
+    docker run -d --name=danbooru-viewer -p 3030:3030 ghcr.io/defaultkavy-dev/danbooru-viewer
+  ```
 
 ## Features
 - Same path as the original website.
