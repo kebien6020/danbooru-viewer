@@ -13,7 +13,7 @@ detail-panel {
     // transition: all 0.3s ease;
     background-color: var(--secondary-color-1);
 
-    @media (max-width: 800px) {
+    @media (max-width: 1600px) {
         position: static;
         width: 100%;
         overflow: visible;

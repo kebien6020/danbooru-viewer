@@ -14,7 +14,7 @@
         transition: all 0.3s ease;
         touch-action: pan-y;
         
-        @media (max-width: 800px) {
+        @media (max-width: 1600px) {
             width: 100%;
             height: calc(100dvh - var(--nav-height));
             border-radius: 0;
