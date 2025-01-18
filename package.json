@@ -2,7 +2,7 @@
   "name": "danbooru-viewer",
   "module": "index.ts",
   "type": "module",
-  "version": "0.13.7",
+  "version": "0.13.8",
   "license": "MIT",
   "scripts": {
     "dev": "bun x vite",
@@ -10,10 +10,9 @@
     "start": "bun server.ts"
   },
   "devDependencies": {
-    "@elexis.js/router": "0.2.4",
     "@elexis.js/layout": "^0.2.1",
+    "@elexis.js/router": "0.2.4",
     "@types/bun": "latest",
-    "elexis": "^0.3.1",
     "sass": "^1.83.4",
     "vite": "^5.4.11"
   },
@@ -24,6 +23,7 @@
     "@elysiajs/cors": "^1.2.0",
     "@elysiajs/html": "^1.2.0",
     "cheerio": "^1.0.0",
+    "elexis": "^0.3.1",
     "elysia": "^1.2.10"
   }
 }
