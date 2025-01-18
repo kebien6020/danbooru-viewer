@@ -211,4 +211,8 @@ $.keys($(window))
   })
   .keydown(['q', 'Q'], e => { e.preventDefault(); if ($Router.index !== 0) $.back(); })
   .keydown(['e', 'E'], e => { e.preventDefault(); if ($Router.forwardIndex !== 0) $.forward(); })
-  .keydown('Tab', e => { e.preventDefault(); previewPanelEnable$.set(!previewPanelEnable$.value) })
+  .keydown('Tab', e => { 
+    e.preventDefault(); 
+    if ($(':route#posts')) previewPanelEnable$.set(!previewPanelEnable$.value);
+    else if ($(':route#post')) detailPanelEnable$.set(!detailPanelEnable$.value);
+  })
