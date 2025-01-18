@@ -1,3 +1,16 @@
+@mixin sidePanelDisable() {
+    position: static;
+    width: 100%;
+    overflow: visible;
+    height: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+route#post.side-panel-disable detail-panel {
+    @include sidePanelDisable();
+}
+
 detail-panel {
     display: flex;
     flex-direction: column;
@@ -14,12 +27,7 @@ detail-panel {
     background-color: var(--secondary-color-1);
 
     @media (max-width: 800px) {
-        position: static;
-        width: 100%;
-        overflow: visible;
-        height: 100%;
-        padding: 1rem;
-        box-sizing: border-box;
+        @include sidePanelDisable();
     }
 
     span.no-content {

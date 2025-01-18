@@ -1,7 +1,7 @@
 import { $Container, $Image, $State, $Video } from "elexis";
 import type { Post } from "../../structure/Post";
 import { time } from "../../structure/Util";
-import { detailPanelEnable$ } from "../../main";
+import { previewPanelEnable$ } from "../../main";
 import type { $PostGrid } from "../PostGrid/$PostGrid";
 export class $PostTile extends $Container {
     post: Post;
@@ -38,7 +38,7 @@ export class $PostTile extends $Container {
                     $('span').content('GIF')
                 ]) : null,
             // Tile
-            $('a').href(this.url).preventDefault(detailPanelEnable$).content(() => [
+            $('a').href(this.url).preventDefault(previewPanelEnable$).content(() => [
                 this.$video,
                 this.$img.on('mousedown', (e) => e.preventDefault())
                     .once('load', (e, $img) => { 
@@ -58,7 +58,7 @@ export class $PostTile extends $Container {
                 if (this.post.isGif) { this.$img.src(this.post.previewURL) }
             }, {passive: true} )
             .on('click', () => {
-                if (!detailPanelEnable$.value) return;
+                if (!previewPanelEnable$.value) return;
                 if (innerWidth <= 800) return $.open(this.url);
                 if (this.attribute('focus') === '') $.open(this.url);
                 else this.trigger('$focus');

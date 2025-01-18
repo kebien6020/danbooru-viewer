@@ -7,6 +7,7 @@ import { PostManager } from "../../structure/PostManager";
 import { $PostViewer } from "../../component/PostViewer/$PostViewer";
 import { $Slide, $SlideViewer } from "../../component/$SlideViewer";
 import { $Video } from "elexis";
+import { detailPanelEnable$ } from "../../main";
 
 export const post_route = $('route').path('/posts/:id?q').id('post').static(false).builder(({$route, params}) => {
     if (!Number(params.id)) return $('h1').content('404: POST NOT FOUND');
@@ -111,7 +112,13 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
             })
         ]),
         new $DetailPanel().position($route).self($detail => {
-            events.on('post_switch', (post) => $detail.update(post))
+            events.on('post_switch', (post) => $detail.update(post));
+            detailPanelCheck(); // initial detail panel status
+            detailPanelEnable$.on('update', ({state$}) => detailPanelCheck())
+            function detailPanelCheck() {
+                if (detailPanelEnable$.value) $route.removeStaticClass('side-panel-disable')
+                else $route.addStaticClass('side-panel-disable')
+            }
         })
     ]
 })

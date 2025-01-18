@@ -1,4 +1,7 @@
 export class LocalSettings {
+    static get previewPanelEnabled() { return this.localdata?.previewPanelEnabled }
+    static set previewPanelEnabled(boolean: boolean | undefined) { this.localdata = {...this.localdata, previewPanelEnabled: boolean }}
+    
     static get detailPanelEnabled() { return this.localdata?.detailPanelEnabled }
     static set detailPanelEnabled(boolean: boolean | undefined) { this.localdata = {...this.localdata, detailPanelEnabled: boolean }}
 
@@ -8,4 +11,5 @@ export class LocalSettings {
 
 export interface LocalSettingsStoreData {
     detailPanelEnabled?: boolean;
+    previewPanelEnabled?: boolean;
 }

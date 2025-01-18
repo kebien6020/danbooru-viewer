@@ -36,7 +36,8 @@ export const [danbooru, safebooru]: Booru[] = [
 Booru.set(Booru.manager.get(Booru.storageAPI ?? '') ?? danbooru);
 const $searchbar = new $Searchbar().hide(true);
 const $drawer = new $Drawer();
-export const detailPanelEnable$ = $.state(LocalSettings.detailPanelEnabled ?? false).on('update', ({state$}) => LocalSettings.detailPanelEnabled = state$.value)
+export const previewPanelEnable$ = $.state(LocalSettings.previewPanelEnabled ?? false).on('update', ({state$}) => LocalSettings.previewPanelEnabled = state$.value)
+export const detailPanelEnable$ = $.state(LocalSettings.detailPanelEnabled ?? true).on('update', ({state$}) => LocalSettings.detailPanelEnabled = state$.value)
 
 // render
 $(document.body).content([
@@ -61,7 +62,10 @@ $(document.body).content([
         .self($self => $Router.events.on('stateChange', ({beforeURL, afterURL}) => {if (beforeURL.hash === '#search') $self.hide(false); if (afterURL.hash === '#search') $self.hide(true)}))
         .on('click', () => $searchbar.open()),
       // Detail Panel Button
-      $('ion-icon').class('detail-panel').name('reader-outline').title('Toggle Detail Panel').on('click', () => detailPanelEnable$.set(!detailPanelEnable$.value)),
+      $('ion-icon').class('detail-panel').name('reader-outline').title('Toggle Detail Panel').on('click', () => {
+        if ($(':route#posts')) previewPanelEnable$.set(!previewPanelEnable$.value)
+        else if ($(':route#post')) detailPanelEnable$.set(!detailPanelEnable$.value)
+      }),
       // Open Booru
       $('a').content($('ion-icon').class('open').name('open-outline').title('Open in Original Site')).href(location.href.replace(location.origin, Booru.used.origin)).target('_blank'),
       // Copy Button
@@ -189,15 +193,15 @@ function componentState(beforeURL: URL | undefined, afterURL: URL) {
 
 function $postsPageComponents($route: $Route, query: {tags?: string}) {
   const $postGrid = new $PostGrid(query);
-  const $detail = new $DetailPanel({preview: true, tagsType: 'name_only'}).hide(detailPanelEnable$.convert(bool => !bool)).position($route);
+  const $previewPanel = new $DetailPanel({preview: true, tagsType: 'name_only'}).hide(previewPanelEnable$.convert(bool => !bool)).position($route);
   detailPanelCheck();
-  detailPanelEnable$.on('update', detailPanelCheck);
-  Booru.events.on('set', () => $detail.update(null));
-  function detailPanelCheck() { detailPanelEnable$.value ? $postGrid.addClass('detail-panel-enabled') : $postGrid.removeClass('detail-panel-enabled') }
+  previewPanelEnable$.on('update', detailPanelCheck);
+  Booru.events.on('set', () => $previewPanel.update(null));
+  function detailPanelCheck() { previewPanelEnable$.value ? $postGrid.addClass('detail-panel-enabled') : $postGrid.removeClass('detail-panel-enabled') }
   $postGrid.$focus
-    .on('focus', ({$focused: $target}) => {if ($target.inDOM() && $target instanceof $PostTile) $detail.update($target.post) })
-    .on('blur', () => $detail.update(null))
-  return { $postGrid, $detail };
+    .on('focus', ({$focused: $target}) => {if ($target.inDOM() && $target instanceof $PostTile) $previewPanel.update($target.post) })
+    .on('blur', () => $previewPanel.update(null))
+  return { $postGrid, $detail: $previewPanel };
 }
 
 $.keys($(window))
@@ -207,4 +211,4 @@ $.keys($(window))
   })
   .keydown(['q', 'Q'], e => { e.preventDefault(); if ($Router.index !== 0) $.back(); })
   .keydown(['e', 'E'], e => { e.preventDefault(); if ($Router.forwardIndex !== 0) $.forward(); })
-  .keydown('Tab', e => { e.preventDefault(); detailPanelEnable$.set(!detailPanelEnable$.value) })
+  .keydown('Tab', e => { e.preventDefault(); previewPanelEnable$.set(!previewPanelEnable$.value) })
