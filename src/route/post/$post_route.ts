@@ -71,6 +71,10 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
                     return true;
                 })
                 .on('switch', ({nextSlide: $target}) => {
+                    const path = `/posts/${$target.slideId()}`;
+                    const search = q ? `?q=${q}` : '';
+                    if (location.pathname === path && location.search === search) return;
+
                     $.replace(`/posts/${$target.slideId()}${q ? `?q=${q}` : ''}`);
                 }).on('beforeSwitch', ({prevSlide, nextSlide}) => {
                     const $prevVideo = prevSlide?.$<$Video>(':video');
@@ -88,6 +92,11 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
         if (dir === 'prev' && index === 0) return;
         const targetPost = orderList.at(dir === 'next' ? index + 1 : index - 1);
         if (!targetPost) return;
+
+        const path = `/posts/${targetPost.id}`;
+        const search = posts.tags ? `?q=${posts.tags}` : '';
+        if (location.pathname === path && location.search === search) return;
+
         $.replace(`/posts/${targetPost.id}${posts.tags ? `?q=${posts.tags}` : ''}`);
     }
 
