@@ -24,7 +24,11 @@ export class $PostGrid extends $Layout {
 
     protected async init() {
         this.posts.events.on('post_fetch', (posts) => { this.renderPosts() })
-        setInterval(async () => { if (this.inDOM() && document.documentElement.scrollTop === 0) await this.posts.fetchPosts('newer'); }, 10000);
+        
+        const timer = setInterval(async () => { 
+            if (this.posts.tag_list.includes('order:random')) return clearInterval(timer);
+            if (this.inDOM() && document.documentElement.scrollTop === 0) await this.posts.fetchPosts('newer'); 
+        }, 10000);
         Booru.events.on('set', () => {
             this.removeAll();
             this.loader();
@@ -42,11 +46,6 @@ export class $PostGrid extends $Layout {
                 if ($(e.target) instanceof $Input) return; 
                 return true;
             })
-            // .keydown('Tab', e => {
-            //     e.preventDefault();
-            //     if (e.shiftKey) this.$focus.prev();
-            //     else this.$focus.next();
-            // })
             .keydown(['w', 'W'], e => { e.preventDefault(); this.$focus.up(); })
             .keydown(['s', 'S'], e => { e.preventDefault(); this.$focus.down(); })
             .keydown(['d', 'D'], e => { e.preventDefault(); this.$focus.right(); })
