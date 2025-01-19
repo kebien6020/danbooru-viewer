@@ -36,7 +36,14 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
         if (!posts.orderMap.size || !posts.cache.has(post)) {
             await post.ready
             posts.addPosts(post);
-            posts.orderMap.set(post.id, post);
+            const ordfav_tag = posts.tag_list?.find(tag => tag.startsWith('ordfav'));
+            if (ordfav_tag) {
+                const username = ordfav_tag.split(':')[1];
+                const fav_list = await Booru.used.fetch(`/favorites.json?search[user_name]=${username}&search[post_id]=${post.id}`) as [{id: number}];
+                if (fav_list[0]) {
+                    posts.orderMap.set(fav_list[0].id, post);
+                }
+            } else posts.orderMap.set(post.id, post);
             posts.fetchPosts('newer');
             posts.fetchPosts('older');
         } else {
@@ -49,11 +56,12 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
             }
         }
         slideViewerHandler({manager: posts});
-        const $slideViewer = $getSlideViewer(posts.tags)
+        const $slideViewer = $getSlideViewer(posts.tags);
         $slideViewer.switch(post.id);
         events.fire('post_switch', post);
     })
 
+    /** create slide viewer or get from cached */
     function $getSlideViewer(q: string | undefined) {
         const $slideViewer = $slideViewerMap.get(q) ?? 
             new $SlideViewer()
