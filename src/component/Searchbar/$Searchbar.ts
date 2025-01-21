@@ -321,7 +321,7 @@ class $TagInput extends $Container {
         return this;
     }
 
-    get query() { return this.tags.array.map(tag => tag.name).toString().replace(',', '+') }
+    get query() { return this.tags.array.map(tag => tag.name).toString().toLowerCase().replace(',', '+') }
 }
 
 class $Tag extends $Container {
