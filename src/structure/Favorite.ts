@@ -1,6 +1,4 @@
 import type { Booru } from "./Booru";
-import type { ClientUser } from "./ClientUser";
-import type { Post } from "./Post";
 import type { User } from "./User";
 
 export interface Favorite extends FavoriteData {}
