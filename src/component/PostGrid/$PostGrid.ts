@@ -76,6 +76,7 @@ export class $PostGrid extends $Layout {
         this.column(col >= 2 ? col : 2);
     }
 
+    /* Grid items update display */
     renderPosts() {
         this.$focus.layer(100).elementSet.clear();
         const $postList = [...this.posts.orderMap.values()].map(post => {

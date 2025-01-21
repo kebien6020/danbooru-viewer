@@ -111,6 +111,8 @@ export class Post extends $EventManager<{update: []}> {
         const data = await this.booru.fetch<Post>(`/favorites.json?post_id=${this.id}`, 'POST')
         this.update(data);
         this.booru.user.favorites.add(data.id);
+        this.booru.user.favorite_count += 1;
+        this.booru.user.update$();
         ClientUser.events.fire('favoriteUpdate', this.booru.user);
         return data.id;
     }
@@ -122,6 +124,8 @@ export class Post extends $EventManager<{update: []}> {
         this.fav_count--;
         this.favcount$.set(this.fav_count);
         this.booru.user.favorites.delete(this.id);
+        this.booru.user.favorite_count -= 1;
+        this.booru.user.update$();
         ClientUser.events.fire('favoriteUpdate', this.booru.user);
         return;
     }
