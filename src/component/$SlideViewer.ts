@@ -39,8 +39,8 @@ export class $SlideViewer extends $Container<HTMLElement, $SlideViewerEventMap> 
             const width = this.domRect().width;
             const containerMove = containerStartLeft - this.$container.offsetLeft;
             if ($pointer.move_x === 0) return;
-            if ($pointer.move_x < 0 && $pointer.movement_x < -2 || containerMove > width / 2) this.next();
-            else if ($pointer.move_x > 0 && $pointer.movement_x > 2 || containerMove + width < width / 2) this.prev();
+            if ($pointer.move_x < 0 || containerMove > width / 2) this.next();
+            else if ($pointer.move_x > 0 || containerMove + width < width / 2) this.prev();
             else {
                 containerLeft = containerStartLeft;
                 this.__slideAnimate__()
