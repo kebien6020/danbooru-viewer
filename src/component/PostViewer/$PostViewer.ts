@@ -28,6 +28,9 @@ export class $PostViewer extends $Container<HTMLElement, $PostViewerEventMap> {
                         this.post.isVideo ? new $VideoController(this.$video, this, this.post) : null,
                         $('div').class('buttons').content([
                             $('ion-icon').title('Favorite').name('heart-outline').self($heart => {
+                                if (Booru.used.user) $heart.hide(false);
+                                else $heart.hide(true);
+                                Booru.events.on('login', () => $heart.hide(false))
                                 ClientUser.events.on('favoriteUpdate', (user) => {
                                     if (user.favorites.has(this.post.id)) $heart.name('heart');
                                     else $heart.name('heart-outline');
