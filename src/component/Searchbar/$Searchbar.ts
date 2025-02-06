@@ -12,10 +12,9 @@ export class $Searchbar extends $Container {
     constructor() {
         super('searchbar');
         this.build();
-        window.addEventListener('keyup', (e) => {
-            if (!this.inDOM() && e.key === '/') this.open();
-            if (this.inDOM() && e.key === 'Escape') this.close(); 
-        })
+        $.keys($(window))
+            .keydown('/', (e) => {e.preventDefault(); this.open()})
+            .keyup('Escape', (e) => {if (this.inDOM()) e.preventDefault(); this.close()})
     }
 
     private build() {

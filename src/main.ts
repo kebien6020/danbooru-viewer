@@ -4,7 +4,7 @@ import '@elexis.js/router';
 import { Booru } from './structure/Booru';
 import { post_route } from './route/post/$post_route';
 import { $PostGrid } from './component/PostGrid/$PostGrid';
-import { $Route, $Router, $RouterAnchor, $RouterNavigationDirection } from '@elexis.js/router';
+import { $Page, $Route, $Router, $RouterAnchor, $RouterNavigationDirection } from '@elexis.js/router';
 import { $Searchbar } from './component/Searchbar/$Searchbar';
 import { $IonIcon } from './component/IonIcon/$IonIcon';
 import { $IconButton } from './component/IconButton/$IconButton';
@@ -63,8 +63,8 @@ $(document.body).content([
         .on('click', () => $searchbar.open()),
       // Detail Panel Button
       $('ion-icon').class('detail-panel').name('reader-outline').title('Toggle Detail Panel').on('click', () => {
-        if ($(':route#posts')) previewPanelEnable$.set(!previewPanelEnable$.value)
-        else if ($(':route#post')) detailPanelEnable$.set(!detailPanelEnable$.value)
+        if ($(':page#posts')) previewPanelEnable$.set(!previewPanelEnable$.value)
+        else if ($(':page#post')) detailPanelEnable$.set(!detailPanelEnable$.value)
       }),
       // Open Booru
       $('a').content($('ion-icon').class('open').name('open-outline').title('Open in Original Site')).href(location.href.replace(location.origin, Booru.used.origin)).target('_blank'),
@@ -98,14 +98,14 @@ $(document.body).content([
   // Base Router
   $('router').base('/').map([
     // Home Page
-    $('route').id('posts').path(['/', '/posts']).builder(({$route, query}) => {
-      const { $postGrid, $detail } = $postsPageComponents($route, query);
-      return [ $postGrid, $detail ]
+    $('route').path(['/', '/posts']).builder(({$page, query}) => {
+      const { $postGrid, $detail } = $postsPageComponents($page, query);
+      return $page.id('posts').content([ $postGrid, $detail ]);
     }),
     // Posts Page
-    $('route').id('posts').path('/posts?tags').builder(({$route, query}) => {
-      const { $postGrid, $detail } = $postsPageComponents($route, query)
-      return [
+    $('route').path('/posts?tags').builder(({$page, query}) => {
+      const { $postGrid, $detail } = $postsPageComponents($page, query)
+      return $page.id('posts').content([
         $('header').content([
           $('h2').content('Posts'),
           $('div').class('tags').self($div => {
@@ -124,7 +124,7 @@ $(document.body).content([
         }),
         $postGrid,
         $detail
-      ]
+      ])
     }),
     // Post Page
     post_route,
@@ -191,9 +191,9 @@ function componentState(beforeURL: URL | undefined, afterURL: URL) {
   $searchbar.checkURL(beforeURL, afterURL); $drawer.checkURL(beforeURL, afterURL)
 }
 
-function $postsPageComponents($route: $Route, query: {tags?: string}) {
+function $postsPageComponents($page: $Page, query: {tags?: string}) {
   const $postGrid = new $PostGrid(query);
-  const $previewPanel = new $DetailPanel({preview: true, tagsType: 'name_only'}).hide(previewPanelEnable$.convert(bool => !bool)).position($route);
+  const $previewPanel = new $DetailPanel({preview: true, tagsType: 'name_only'}).hide(previewPanelEnable$.convert(bool => !bool)).position($page);
   detailPanelCheck();
   previewPanelEnable$.on('update', detailPanelCheck);
   Booru.events.on('set', () => $previewPanel.update(null));
@@ -213,6 +213,6 @@ $.keys($(window))
   .keydown(['e', 'E'], e => { e.preventDefault(); if ($Router.forwardIndex !== 0) $.forward(); })
   .keydown('Tab', e => { 
     e.preventDefault(); 
-    if ($(':route#posts')) previewPanelEnable$.set(!previewPanelEnable$.value);
-    else if ($(':route#post')) detailPanelEnable$.set(!detailPanelEnable$.value);
+    if ($(':page#posts')) previewPanelEnable$.set(!previewPanelEnable$.value);
+    else if ($(':page#post')) detailPanelEnable$.set(!detailPanelEnable$.value);
   })

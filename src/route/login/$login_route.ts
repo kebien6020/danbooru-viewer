@@ -1,9 +1,9 @@
 import { Booru } from "../../structure/Booru"
 import { ClientUser } from "../../structure/ClientUser";
 
-export const $login_route = $('route').id('login').path('/login').builder(() => {
+export const $login_route = $('route').path('/login').builder(({$page}) => {
     const [username$, apiKey$] = [$.state(''), $.state('')]
-    return [
+    return $page.id('login').content([
         $('div').class('login-container').content([
             $('h1').content('Login'),
             $('div').class('username', 'input-container').content([
@@ -26,5 +26,5 @@ export const $login_route = $('route').id('login').path('/login').builder(() => 
             }),
             $('icon-button').content('Create Account').icon('open-outline').on('click', () => $.open('https://danbooru.donmai.us/users/new', '_blank')),
         ])
-    ]
+    ])
 })

@@ -9,8 +9,8 @@ import { $Slide, $SlideViewer } from "../../component/$SlideViewer";
 import { $Video } from "elexis";
 import { detailPanelEnable$ } from "../../main";
 
-export const post_route = $('route').path('/posts/:id?q').id('post').static(false).builder(({$route, params}) => {
-    if (!Number(params.id)) return $('h1').content('404: POST NOT FOUND');
+export const post_route = $('route').path('/posts/:id?q').static(false).builder(({$page, params}) => {
+    if (!Number(params.id)) return $page.content($('h1').content('404: POST NOT FOUND'));
     const events = $.events<{
         post_switch: [Post]
     }>();
@@ -18,7 +18,7 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
     $.keys($(window)).self($keys => $keys
         .if(e => {
             if ($(e.target) instanceof $Input) return;
-            if (!$route.inDOM()) return;
+            if (!$page.inDOM()) return;
             return true;
         })
         .keydown(['f', 'F'], e => {
@@ -29,7 +29,7 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
         .keydown(['d', 'D'], e => { navPost('next') })
     )
     const $slideViewerMap = new Map<string | undefined, $SlideViewer>();
-    $route.on('open', async ({params, query}) => {
+    $page.on('open', async ({params, query}) => {
         posts = PostManager.get(query.q);
         post = Post.get(Booru.used, +params.id);
         posts.events.on('post_fetch', slideViewerHandler);
@@ -99,9 +99,9 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
         if (postList.length) $slideViewer.arrange([...posts.orderMap.values()].map(post => post.id));
     }
 
-    return [
+    return $page.id('post').content([
         $('div').class('slide-viewer-container').self($div => {
-            $route.on('open', () => {
+            $page.on('open', () => {
                 $div.content($getSlideViewer(posts.tags))
             })
         }),
@@ -119,14 +119,14 @@ export const post_route = $('route').path('/posts/:id?q').id('post').static(fals
                 })
             })
         ]),
-        new $DetailPanel().position($route).self($detail => {
+        new $DetailPanel().position($page).self($detail => {
             events.on('post_switch', (post) => $detail.update(post));
             detailPanelCheck(); // initial detail panel status
             detailPanelEnable$.on('update', ({state$}) => detailPanelCheck())
             function detailPanelCheck() {
-                if (detailPanelEnable$.value) $route.removeStaticClass('side-panel-disable')
-                else $route.addStaticClass('side-panel-disable')
+                if (detailPanelEnable$.value) $page.removeStaticClass('side-panel-disable')
+                else $page.addStaticClass('side-panel-disable')
             }
         })
-    ]
+    ])
 })

@@ -171,7 +171,7 @@ router {
     display: block;
     position: relative;
 
-    route {
+    page {
         display: block;
         position: relative;
         padding-inline: 1rem;
@@ -179,7 +179,7 @@ router {
     }
 }
 
-route#posts {
+#posts {
     
     header {
         margin-bottom: 1rem;

@@ -4,7 +4,7 @@ import { Booru } from "../../structure/Booru";
 import { Tag, TagCategory } from "../../structure/Tag";
 import { numberFormat } from "../../structure/Util";
 import type { $IonIcon } from "../IonIcon/$IonIcon";
-import type { $Route } from "@elexis.js/router";
+import type { $Page, $Route } from "@elexis.js/router";
 
 export class $DetailPanel extends $Container {
     post: Post | null = null;
@@ -121,10 +121,10 @@ export class $DetailPanel extends $Container {
         setTimeout(() => $ion.name('clipboard'), 3000);
     }
 
-    position($route: $Route<any>) {
+    position($page: $Page<any>) {
         let scrollTop = 0;
         addEventListener('scroll', () => { if (this.inDOM()) scrollTop = document.documentElement.scrollTop }, {passive: true})
-        $route
+        $page
             .on('beforeShift', () => { if (innerWidth > 800) this.css({position: `absolute`, top: `calc(${scrollTop}px + var(--nav-height) + var(--padding))`}) })
             .on('afterShift', () => this.css({position: '', top: ''}))
         return this;
