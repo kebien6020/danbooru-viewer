@@ -119,7 +119,7 @@ export const post_route = $('route').path('/posts/:id?q').static(false).builder(
                 })
             })
         ]),
-        new $DetailPanel().position($page).self($detail => {
+        new $DetailPanel().hide(detailPanelEnable$.convert(bool => !bool)).position($page).self($detail => {
             events.on('post_switch', (post) => $detail.update(post));
             detailPanelCheck(); // initial detail panel status
             detailPanelEnable$.on('update', ({state$}) => detailPanelCheck())
