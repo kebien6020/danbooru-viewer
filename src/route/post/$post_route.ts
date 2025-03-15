@@ -25,8 +25,8 @@ export const post_route = $('route').path('/posts/:id?q').static(false).builder(
             if (Booru.used.user?.favorites.has(post.id)) post.deleteFavorite();
             else post.createFavorite();
         })
-        .keydown(['a', 'A'], e => navPost('prev') )
-        .keydown(['d', 'D'], e => { navPost('next') })
+        .keydown(['a', 'A', 'ArrowLeft'], e => navPost('prev') )
+        .keydown(['d', 'D', 'ArrowRight'], e => { navPost('next') })
     )
     const $slideViewerMap = new Map<string | undefined, $SlideViewer>();
     $page.on('open', async ({params, query}) => {

@@ -46,10 +46,10 @@ export class $PostGrid extends $Layout {
                 if ($(e.target) instanceof $Input) return; 
                 return true;
             })
-            .keydown(['w', 'W'], e => { e.preventDefault(); this.$focus.up(); })
-            .keydown(['s', 'S'], e => { e.preventDefault(); this.$focus.down(); })
-            .keydown(['d', 'D'], e => { e.preventDefault(); this.$focus.right(); })
-            .keydown(['a', 'A'], e => { e.preventDefault(); this.$focus.left(); })
+            .keydown(['w', 'W', 'ArrowUp'], e => { e.preventDefault(); this.$focus.up(); })
+            .keydown(['s', 'S', 'ArrowDown'], e => { e.preventDefault(); this.$focus.down(); })
+            .keydown(['d', 'D', 'ArrowRight'], e => { e.preventDefault(); this.$focus.right(); })
+            .keydown(['a', 'A', 'ArrowLeft'], e => { e.preventDefault(); this.$focus.left(); })
             .keydown([' ', 'Enter'], e => {
                 e.preventDefault();
                 const focused = this.$focus.currentLayer?.currentFocus;
