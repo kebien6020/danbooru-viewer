@@ -1,7 +1,9 @@
+ARG BUN_VERSION=1.2.2-alpine
+
 #
 # Build the client
 #
-FROM oven/bun:1-alpine AS build
+FROM oven/bun:${BUN_VERSION} AS build
 
 WORKDIR /build
 COPY package.json ./
@@ -13,7 +15,7 @@ RUN bun run build
 # Make final node_modules folder with only production dependencies
 # (i.e. only the server dependencies)
 #
-FROM oven/bun:1-alpine AS deps
+FROM oven/bun:${BUN_VERSION} AS deps
 WORKDIR /build
 COPY package.json ./
 RUN bun install --production
@@ -21,7 +23,7 @@ RUN bun install --production
 #
 # Production image with only the required files
 #
-FROM oven/bun:1-alpine
+FROM oven/bun:${BUN_VERSION}
 
 WORKDIR /app
 COPY server.ts package.json /app/
